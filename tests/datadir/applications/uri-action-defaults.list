@@ -1,0 +1,14 @@
+[Default Actions]
+http=test-browser.desktop
+https=test-browser.desktop
+jabberto=test-osso-addressbook.desktop
+voipto=test-browser.desktop
+ftp=test-browser.desktop
+sipto=test-osso-addressbook.desktop
+mailto=test-email-engine.desktop
+chatto=test-chat-ui.desktop
+
+# For new actions
+[X-Osso-URI-Scheme http]
+text-html=test-browser.desktop:X-Osso-URI-Action-Open
+audio-x-mp3=test-mp_ui.desktop:X-Osso-URI-Action-Open

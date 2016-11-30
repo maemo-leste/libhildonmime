@@ -1,0 +1,194 @@
+libhildonmime (2.1.5-1+0m5) stable; urgency=low
+
+  * This entry has been added by BIFH queue processor
+    Suffix +0m5 added to package revision
+
+ -- Gary Birkett <ext-gary.2.birkett@nokia.com>  Wed, 17 Feb 2010 11:37:52 +0200
+
+libhildonmime (2.1.5-1) stable; urgency=low
+
+  * Fixes: NB#123294 - Missing public libhildonmime API documentation
+    Enabled gtk-doc and creation of the doc package
+
+ -- Gordon Williams <gordon.williams@collabora.co.uk>  Tue,  9 Feb 2010 11:09:21 +0000
+
+libhildonmime (2.1.4-1) stable; urgency=low
+
+  * Fixes: NB#131671 - Missing new window/app instance transition.
+    Add the expected DBUS calls to show a loading screen for mime-open and uri.
+
+ -- Gordon Williams <gordon.williams@collabora.co.uk>  Tue, 19 Jan 2010 12:21:21 +0000
+
+libhildonmime (2.1.3-1) stable; urgency=low
+
+  * Fixes: NB#103477, wrong common folder icons
+
+ -- Richard Hult <richard@imendio.com>  Fri, 13 Mar 2009 10:22:00 +0100
+
+libhildonmime (2.1.2-1) stable; urgency=low
+
+  * Fixes: NB#100619, Real formats must be removed from default.list
+	
+ -- Richard Hult <richard@imendio.com>  Thu, 12 Feb 2009 11:58:00 +0100
+
+libhildonmime (2.1.1-1) stable; urgency=low
+
+  * Fixes: NB#97968, Sip URI is not handled properly
+  * Fixes: NB#96404, VoIP Call in not initiated from browser
+  * Fixes: NB#97966, Callto/tel URI is not handled properly
+	
+ -- Richard Hult <richard@imendio.com>  Fri, 23 Jan 2009 10:48:00 +0100
+
+libhildonmime (2.1.0-1) stable; urgency=low
+
+  * Fixes: NB#97883, Wrong default handler for media files
+  * Fixes: NB#97932, xmpp URI is not handled properly
+  * Fixes: NB#96807, chatto: is not opening chat window
+  * Fixes: NB#97592 Default handler for sms: uri is wrong / missing
+
+ -- Richard Hult <richard@imendio.com>  Wed, 14 Jan 2009 09:40:00 +0100
+
+libhildonmime (2.0.2-2) stable; urgency=low
+
+  * Fixes: NB#87567, libhildonmime fails to build due to variable format
+  * Don't build the debian package with -Werror
+
+ -- Richard Hult <richard@imendio.com>  Mon, 17 Nov 2008 09:16:00 +0100
+
+libhildonmime (2.0.2-1) stable; urgency=low
+
+  * Use 255 max. arguments for a D-Bus message instead of 256. Fixes: NB#76269
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 18 Mar 2008 14:49:51 +0200
+
+libhildonmime (2.0.1-1) stable; urgency=low
+
+  * Fixes: NB#80072, Speed contact applet proposal 'Add to Contacts'
+
+ -- Richard Hult <richard@imendio.com>  Fri, 29 Feb 2008 9:33:12 +0100
+
+libhildonmime (2.0.0-1) stable; urgency=low
+
+  * Stable release of 1.10.x series.
+
+ -- Martyn Russell <martyn@imendio.com>  Wed,  9 Jan 2008 13:26:00 +0000
+
+libhildonmime (1.10.1-1) unstable; urgency=low
+
+  * Fixes: NB73548, Access to already freed memory in webshortcut settings
+
+ -- Martyn Russell <martyn@imendio.com>  Wed, 31 Oct 2007 12:00:00 +0000
+	
+libhildonmime (1.10.0-1) unstable; urgency=low
+
+  * Fixes: NB#70451, hildon_uri_get_default_action have too many output
+  * Fixes: NB#66935, File manager crashed while trying to access audio clips
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri, 21 Sep 2007 17:20:00 +0100
+
+libhildonmime (1.9.15-1) unstable; urgency=low
+
+  * Update default URI handler for mailto scheme to use old email engine.
+  * Fixes: NB#62724, Unable to launch media player from browser with mms://  url
+  * Fixes: NB#67710, Application loading information banner is not shown if ...
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri, 31 Aug 2007 17:00:00 +0100
+
+libhildonmime (1.9.14-1) unstable; urgency=low
+
+  * Fixes: NB#62728, Default handling application for "sip" link is incorrect
+
+ -- Martyn Russell <martyn@imendio.com>  Thu, 23 Aug 2007 18:00:00 +0100
+
+libhildonmime (1.9.13-1) unstable; urgency=low
+
+  * Fixes: NB#62728, Default handling application for "sip" link is incorrect
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 17 Aug 2007 17:00:00 +0100
+
+libhildonmime (1.9.12-1) unstable; urgency=low
+
+  * Updated the default application list so the chat-ui is default for xmpp schemes.
+  * Fixes: NB#65400, libhildonmime won't build
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 10 Aug 2007 17:00:00 +0100
+	
+libhildonmime (1.9.11-1) unstable; urgency=low
+
+  * Fixes: NB#62728, Default handling application for "sip" link is incorrect
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri, 13 Jul 2007 16:10:01 +0100
+	
+libhildonmime (1.9.10-1) unstable; urgency=low
+
+  * Updated the default application list for mime types with the http scheme.
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 29 Jun 2007 17:00:01 +0100
+
+libhildonmime (1.9.9-1) unstable; urgency=low
+
+  * Fix the fix for this:
+  * Fixes: NB#60083, modest.desktop should be the default handler for mailto
+
+ -- Richard Hult <richard@imendio.com>  Tue, 26 Jun 2007 13:31:23 +0200
+	
+libhildonmime (1.9.8-1) unstable; urgency=low
+
+  * Updated action filter function to sort by action type.
+  * Fixed hildon_uri_open() call to  _get_actions_by_uri() with uri not scheme.
+  * Fixed hildon_uri_open() to use _by_uri() API when getting default action.
+  * Fixed test-uri -u option which was using old API.
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 22 Jun 2007 17:00:01 +0100
+	
+libhildonmime (1.9.7-2) unstable; urgency=low
+
+  * Fixed getting default action when falling back to older method
+  * Fixed mime-type retrieval so we guess by extension not accessing file
+  * Fixes: NB#48685, Web shortcut; Banner for invalid URI not shown ...
+  * Fixes: NB#60083, modest.desktop should be the default handler for mailto
+
+ -- Richard Hult <richard@imendio.com>  Fri, 15 Jun 2007 17:56:32 +0200
+
+libhildonmime (1.9.5-1) unstable; urgency=low
+
+  * Fixed empty desktop file in list returned when getting desktop files by scheme
+  * Fixed a crasher when requesting the default action by uri.
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri, 04 May 2007 17:00:01 +0100
+
+libhildonmime (1.9.4-1) unstable; urgency=low
+
+  * Improve test case and documentation for open API, related to NB#54056
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 27 Apr 2007 17:00:01 +0100
+
+libhildonmime (1.9.3-2) unstable; urgency=low
+
+  * Implemented: NR#153624, NR#153625, NR#153171
+
+ -- Richard Hult <richard@imendio.com>  Fri, 30 Mar 2007 17:33:01 +0200
+
+libhildonmime (1.9.3-1) unstable; urgency=low
+
+  * Remove .la files from install
+
+ -- Richard Hult <richard@imendio.com>  Mon, 26 Mar 2007 16:10:01 +0200
+
+libhildonmime (1.9.2) unstable; urgency=low
+
+  * Removed a glitch inside the uri handling code. 
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Thu, 22 Feb 2007 16:52:58 +0200
+
+libhildonmime (1.9.1) unstable; urgency=low
+
+  * Added conflict package 
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Wed, 21 Feb 2007 16:36:12 +0200
+
+libhildonmime (1.9.0-1) unstable; urgency=low
+
+  * Start new development branch
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Wed, 17 Jan 2007 10:36:20 +0200

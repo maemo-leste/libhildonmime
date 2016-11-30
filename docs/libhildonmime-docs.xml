@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<book lang="en" id="libhildonmime" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <title>libhildonmime Reference Manual</title>
+  <bookinfo>
+    <title>libhildonmime Reference Manual</title>
+    <releaseinfo>For libhildonmime &version;</releaseinfo>
+  </bookinfo>
+  
+  <part id="hildon-mime-api">
+    <title>Hildon Mime API</title>
+
+    <chapter id="general">
+      <title>General</title>
+      <xi:include href="xml/hildon-mime.xml"/>
+      <xi:include href="xml/hildon-mime-patterns.xml"/>
+      <xi:include href="xml/hildon-uri.xml"/>
+    </chapter>
+
+  </part>
+
+  <index id="symbols">
+    <title>Index</title>
+  </index>
+  <index role="hierarchy" id="hierarchy">
+    <title>Object Hierarchy</title>
+    <xi:include href="xml/tree_index.sgml"/>
+  </index>
+</book>

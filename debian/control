@@ -1,0 +1,43 @@
+Source: libhildonmime
+Section: libs
+Priority: optional
+Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libosso-gnomevfs2-dev (>= 2.16.3), libdbus-glib-1-dev, gtk-doc-tools
+Standards-Version: 3.6.1.0
+
+Package: libhildonmime0
+Conflicts: libossomime0 (<< 1.8.5) 
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, hildon-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr
+Description: Library for activating an application to handle a certain mime type
+ This package contains a library for activating an application to handle
+ a certain mime type.
+
+Package: libhildonmime-dev
+Section: devel
+Architecture: any
+Depends: libhildonmime0 (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libdbus-glib-1-dev
+Description: libhildonmime development files
+ Development files for the libhildonmime package.
+
+Package: libhildonmime0-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libhildonmime0 (= ${Source-Version})
+Description: libhildonmime debugging symbols
+ Development files for the libhildonmime package.
+
+Package: libhildonmime0-doc
+Section: doc
+Architecture: all
+Description: libhildonmime library documentation
+
+Package: hildon-update-category-database
+Section: misc
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Tool for managing the mime/category database
+ This package contains a tool that manages the mime/category mapping
+ database.
