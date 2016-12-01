@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <hildon-mime.h>
 
 #define assert_int(a, b) G_STMT_START {				        \
@@ -649,9 +648,7 @@ main (int argc, char **argv)
 		return 1;
 	}
 
-	gnome_vfs_init ();
-
-	if (0) {	
+	if (1) {
 		test_get_mime_types ();
 		test_get_actions ();
 	}
@@ -664,8 +661,6 @@ main (int argc, char **argv)
 	test_failure_conditions ();
 	test_system_default_actions ();
 	test_local_default_actions ();
-
-	gnome_vfs_shutdown ();
 
 	return 0;
 }

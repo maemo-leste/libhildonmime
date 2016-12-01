@@ -28,5 +28,6 @@ libhildonmime_la_SOURCES = 	\
 
 bin_PROGRAMS = hildon-update-category-database
 hildon_update_category_database_SOURCES = update-category-database.c
-hildon_update_category_database_CFLAGS = $(UPDATE_CATEGORY_CFLAGS)
+hildon_update_category_database_CFLAGS = $(UPDATE_CATEGORY_CFLAGS) \
+	-Wno-pointer-sign
 hildon_update_category_database_LDADD = $(UPDATE_CATEGORY_LIBS)

@@ -42,7 +42,6 @@ AC_CHECK_HEADERS([stdlib.h string.h])
 dnl Defined in acinclude.m4
 IDT_COMPILE_WARNINGS
 
-GNOME_VFS_REQUIRED=2.16.3
 DBUS_REQUIRED=0.60
 GLIB_REQUIRED=2.6.0
 GTK_REQUIRED=2.6.0
@@ -54,9 +53,8 @@ dnl =======================================
 dnl libhildonmime
 dnl =======================================
 PKG_CHECK_MODULES(LIBHILDONMIME, [
+        gio-2.0
         glib-2.0 >= $GLIB_REQUIRED
-        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
-        gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
         dbus-glib-1 >= $DBUS_REQUIRED
 ])
 

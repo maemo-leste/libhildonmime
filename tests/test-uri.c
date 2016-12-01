@@ -24,7 +24,6 @@
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <hildon-mime.h>
 
 static gboolean   use_default = FALSE;
@@ -117,8 +116,6 @@ main (int argc, char **argv)
 	GOptionContext *context;
 	GError         *error = NULL;
 
-	g_thread_init (NULL);
-
 	context = g_option_context_new ("- test the hildon-uri API.");
 	g_option_context_add_main_entries (context, entries, NULL);
 	g_option_context_parse (context, &argc, &argv, NULL);
@@ -134,8 +131,6 @@ main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	gnome_vfs_init ();
-
 	if (set_default_to_nothing) {
 		hildon_uri_set_default_action (set_default_to_nothing, NULL, &error);
 		if (error != NULL) {
@@ -429,18 +424,27 @@ main (int argc, char **argv)
 	}
 
 	if (get_mime_type) {
-		const gchar *mime_type = NULL;
+		gchar *mime_type = NULL;
+		gchar *content_type;
 
-		mime_type = gnome_vfs_get_mime_type_for_name (get_mime_type);
+		content_type = g_content_type_guess (get_mime_type, NULL, 0,
+						     NULL);
+		mime_type = g_content_type_get_mime_type(content_type);
+
+		g_free(content_type);
 
 		if (!mime_type) {
 			g_printerr ("Could not get mime type from uri:'%s'\n", 
 				    get_mime_type);
+			g_free(mime_type);
+
 			return EXIT_FAILURE;
 		}
 
 		g_print ("Mime type for URI:'%s' is '%s'\n", 
 			 get_mime_type, mime_type);
+
+		g_free(mime_type);
 	}
 
 	if (open_uris) {
@@ -494,8 +498,6 @@ main (int argc, char **argv)
 		       g_print ("Opened URI:'%s' successfully\n\n", uri);
 		}
 	}
-
-	gnome_vfs_shutdown ();
 
 	return EXIT_SUCCESS;
 }

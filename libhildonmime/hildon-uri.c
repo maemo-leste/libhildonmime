@@ -22,8 +22,7 @@
 
 #include <config.h>
 #include <string.h>
-
-#include <libgnomevfs/gnome-vfs.h>
+#include <sys/stat.h>
 
 #include "hildon-mime.h"
 
@@ -1566,7 +1565,8 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 	GSList      *l;
 	gchar       *filename;
 	gchar       *scheme = NULL;
-	const gchar *mime_type;
+	gchar *mime_type;
+	gchar *content_type;
 
 	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', NULL);
 
@@ -1575,8 +1575,12 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 		return NULL;
 	}
 
-	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
-	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+	content_type = g_content_type_guess (uri_str, NULL, 0, NULL);
+	mime_type = g_content_type_get_mime_type(content_type);
+	g_free(content_type);
+
+	if (mime_type && !strcmp (mime_type, "application/octet-stream")) {
+		g_free(mime_type);
 		mime_type = NULL;
 	}
 
@@ -1603,6 +1607,7 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 	actions = uri_get_desktop_file_actions_filtered (actions, 
 							 action_type, 
 							 mime_type);
+	g_free(mime_type);
 
 	/* Make sure the default action is the first item in the list */
 	DEBUG_MSG (("URI: Making sure default action is the top of the list..."));
@@ -1996,7 +2001,8 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 	GKeyFile         *key_file;
 	HildonURIAction  *action = NULL;
 	gchar            *scheme = NULL;
-	const gchar      *mime_type;
+	gchar            *mime_type;
+	gchar            *content_type;
 	gchar            *desktop_file = NULL;
 	gchar            *filename;
 	gchar            *full_path = NULL;
@@ -2009,8 +2015,13 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 		return NULL;
 	}
 
-	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
-	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+	content_type = g_content_type_guess (uri_str, NULL, 0, NULL);
+	mime_type = g_content_type_get_mime_type(content_type);
+
+	g_free(content_type);
+
+	if (mime_type && !strcmp (mime_type, "application/octet-stream")) {
+		g_free(mime_type);
 		mime_type = NULL;
 	}
 
@@ -2075,6 +2086,8 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 			action = hildon_uri_get_default_action (scheme, error);
 		}
 	}
+
+	g_free(mime_type);
 
 	g_key_file_free (key_file);
 
@@ -2186,7 +2199,8 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 				      GError          **error)
 {
 	gchar       *scheme = NULL;
-	const gchar *mime_type;
+	gchar       *mime_type;
+	gchar       *content_type;
 	const gchar *desktop_file = NULL;
 	const gchar *action_id = NULL;
 	gboolean     ok;
@@ -2207,8 +2221,13 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 		return FALSE;
 	}
 
-	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
-	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+	content_type = g_content_type_guess (uri_str, NULL, 0, NULL);
+	mime_type = g_content_type_get_mime_type(content_type);
+
+	g_free(content_type);
+
+	if (mime_type && !strcmp (mime_type, "application/octet-stream")) {
+		g_free(mime_type);
 		mime_type = NULL;
 	}
 
@@ -2229,6 +2248,7 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 			     "The defaults file could not be saved.");
 	}
 
+	g_free(mime_type);
 	g_free (scheme);
 
 	return ok;

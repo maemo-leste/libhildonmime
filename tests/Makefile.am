@@ -12,7 +12,6 @@ noinst_PROGRAMS = 		\
 	test-mime-types         \
 	test-mime-icon 		\
 	test-mime-category	\
-	test-mime-default-app	\
 	test-uri		\
 	test-service            \
 	test-mime-patterns	\
@@ -33,10 +32,6 @@ test_mime_icon_LDADD = $(LIBHILDONMIME_LIBS) $(top_builddir)/libhildonmime/libhi
 test_mime_category_SOURCES = test-mime-category.c
 test_mime_category_CFLAGS = $(LIBHILDONMIME_CFLAGS)
 test_mime_category_LDADD = $(LIBHILDONMIME_LIBS) $(top_builddir)/libhildonmime/libhildonmime.la
-
-test_mime_default_app_SOURCES = test-mime-default-app.c
-test_mime_default_app_CFLAGS = $(LIBHILDONMIME_CFLAGS)
-test_mime_default_app_LDADD = $(LIBHILDONMIME_LIBS) $(top_builddir)/libhildonmime/libhildonmime.la
 
 test_uri_SOURCES = test-uri.c
 test_uri_CFLAGS = $(LIBHILDONMIME_CFLAGS)

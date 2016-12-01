@@ -23,7 +23,6 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <hildon-mime.h>
 
 int
@@ -32,8 +31,6 @@ main (int argc, char **argv)
 	gchar              *name;
 	HildonMimeCategory  category;
 	const gchar        *str;
-
-	gnome_vfs_init ();
 
 	if (argc < 2) {
 		g_printerr ("Usage: %s <mime type>\n", argv[0]);
@@ -49,8 +46,6 @@ main (int argc, char **argv)
 	} else {
 		g_print ("The category is '%s' (%d)\n", str, category);
 	}
-
-	gnome_vfs_shutdown ();
 
 	return 0;
 }

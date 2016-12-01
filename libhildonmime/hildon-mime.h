@@ -25,8 +25,7 @@
 #define HILDON_MIME_H_
 
 #include <glib.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-handlers.h> 
+#include <gio/gio.h>
 #ifndef DBUS_API_SUBJECT_TO_CHANGE
 #define DBUS_API_SUBJECT_TO_CHANGE
 #endif
@@ -72,7 +71,7 @@ void               hildon_mime_application_mime_types_list_free (GList          
 
 /* Icon */
 gchar **           hildon_mime_get_icon_names                   (const gchar        *mime_type,
-								 GnomeVFSFileInfo   *file_info);
+								 GFileInfo          *file_info);
 
 G_END_DECLS
 

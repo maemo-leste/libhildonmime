@@ -32,7 +32,6 @@
 
 #include <string.h>
 
-#include <libgnomevfs/gnome-vfs-mime.h>
 #include <dbus/dbus-glib.h>
 
 #include "hildon-mime.h"
@@ -152,19 +151,25 @@ static gchar *
 get_service_name_by_mime_type (const char *mime_type)
 {
 	GList *list;
-	gchar *default_id;
+	GAppInfo *info;
+	gchar *content_type;
 
 	dprint ("Getting default desktop entry for mime type '%s'...", mime_type);
 
-	default_id = gnome_vfs_mime_get_default_desktop_entry (mime_type);
-	if (default_id) {
+	content_type = g_content_type_from_mime_type(mime_type);
+	if (!content_type) {
+		dprint ("No content type for mime type found");
+		return NULL;
+	}
+
+	info = g_app_info_get_default_for_type (content_type, FALSE);
+	if (info) {
 		gchar *service_name = NULL;
 
-		if (default_id[0] != '\0') {
-			service_name = get_service_name_from_desktop_file (default_id); 
-		}
+		g_free(content_type);
+		service_name = get_service_name_from_desktop_file (g_app_info_get_id (info));
 
-		g_free (default_id);
+		g_object_unref (info);
 
 		dprint ("Found service name '%s' (default desktop entry)", service_name);
 
@@ -174,19 +179,22 @@ get_service_name_by_mime_type (const char *mime_type)
 	dprint ("Getting all desktop entries...");
 
 	/* Failing that, try something from the complete list */
-	list = gnome_vfs_mime_get_all_desktop_entries (mime_type);
+	list = g_app_info_get_all_for_type (content_type);
 	if (list) {
 		gchar *service_name = NULL;
 
-		service_name = get_service_name_from_desktop_file (list->data); 
+		g_free(content_type);
+		service_name = get_service_name_from_desktop_file (g_app_info_get_id (list->data));
 
 		dprint ("Found service name '%s' (first entry found)", service_name);
 
-		g_list_foreach (list, (GFunc) g_free, NULL);
+		g_list_foreach (list, (GFunc) g_object_unref, NULL);
 		g_list_free (list);
 
 		return service_name;
 	}
+
+	g_free(content_type);
 
 	dprint ("No service name found");
 
@@ -196,12 +204,14 @@ get_service_name_by_mime_type (const char *mime_type)
 static gchar *
 get_service_name_by_path (const gchar *path)
 {
-	const gchar *mime_type;
+	gchar *content_type;
+	gchar *mime_type;
+	gchar *service_name;
 
 	dprint ("Getting mime type for path '%s'", path);
 
-	mime_type = gnome_vfs_mime_type_from_name_or_default (path, NULL);
-	if (mime_type == NULL) {
+	content_type = g_content_type_guess (path, NULL, 0, NULL);
+	if (content_type == NULL) {
 		dprint ("No mime type found for '%s'", path);
 		DLOG_OPEN("libossomime");
 		DLOG_ERR_F("error: Unable to determine MIME-type of file '%s'",
@@ -211,8 +221,14 @@ get_service_name_by_path (const gchar *path)
 		return NULL;
 	}
 
-	return get_service_name_by_mime_type (mime_type);
-}			
+	mime_type = g_content_type_get_mime_type (content_type);
+	g_free(content_type);
+
+	service_name = get_service_name_by_mime_type (mime_type);
+	g_free(mime_type);
+
+	return service_name;
+}
 
 static void 
 mime_open_file_list_foreach (const gchar  *key, 
@@ -390,8 +406,6 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 		return 0;
 	}
 
-	gnome_vfs_init (); /* make sure that gnome vfs is initialized */
-
 	service_name = get_service_name_by_path (file);
 	if (!service_name) {
 		dprint ("No D-Bus service for file '%s'", file);
@@ -430,7 +444,6 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 	GHashTable *apps = NULL;
 	GSList     *list = NULL;
 	GSList     *l;
-	gint        num_apps;
 	gboolean    success = TRUE;
 
 	if (con == NULL) {
@@ -451,8 +464,6 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 				      g_str_equal,
 				      NULL, 
 				      (GDestroyNotify) app_entry_free);
-    
-	gnome_vfs_init (); /* make sure that gnome vfs is initialized */
 
 	for (l = files; l; l = l->next) {
 		AppEntry *entry;
@@ -482,7 +493,6 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 		}			
 	}	
 
-	num_apps = g_hash_table_size (apps);
 	g_hash_table_foreach (apps, (GHFunc) mime_open_file_list_foreach, &list);
 
 	/* If we didn't find an application to launch, it's an error. */
@@ -547,8 +557,6 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
                LOG_CLOSE();
                return 0;
        }
-
-       gnome_vfs_init ();
 
        service_name = get_service_name_by_mime_type (mime_type);
        if (!service_name) {

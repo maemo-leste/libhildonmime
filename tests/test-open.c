@@ -70,8 +70,6 @@ main (int argc, char** argv)
 	GOptionContext *context;
 	gboolean        success;
 		
-	gnome_vfs_init ();
-
 	context = g_option_context_new ("- test the hildon-open API.");
 	g_option_context_add_main_entries (context, entries, NULL);
 	g_option_context_parse (context, &argc, &argv, NULL);
@@ -147,7 +145,5 @@ main (int argc, char** argv)
 	g_main_loop_run (main_loop);
 	g_main_loop_unref (main_loop);
 
-	gnome_vfs_shutdown ();
-	
 	return EXIT_SUCCESS;
 }

@@ -29,7 +29,7 @@
 int
 main (int argc, char** argv)
 {
-	GnomeVFSFileInfo  *file_info;
+	GFileInfo  *file_info;
 	gchar            **names;
 	gint               i;
 
@@ -38,14 +38,12 @@ main (int argc, char** argv)
 		return 1;
 	}
 
-	gnome_vfs_init ();
-	
 	file_info = NULL;
 	if (argc > 2) {
 		if (strcmp (argv[2], "dir") == 0) {
-			file_info = gnome_vfs_file_info_new ();
-			file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
-			file_info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+			file_info = g_file_info_new ();
+			g_file_info_set_file_type(file_info,
+						  G_FILE_TYPE_DIRECTORY);
 		}
 	}
 
@@ -59,10 +57,8 @@ main (int argc, char** argv)
 	g_strfreev (names);
 
 	if (file_info) {
-		gnome_vfs_file_info_unref (file_info);
+		g_object_unref (file_info);
 	}
 
-	gnome_vfs_shutdown ();
-	
 	return 0;
 }

@@ -29,49 +29,39 @@
 
 #include <config.h>
 #include "hildon-mime.h"
-#include <libgnomevfs/gnome-vfs-mime-handlers.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <string.h>
 
-#define ICON_NAME_BLOCK_DEVICE          "filemanager_unknown_file"
 #define ICON_NAME_BROKEN_SYMBOLIC_LINK  "filemanager_nonreadable_file"
-#define ICON_NAME_CHARACTER_DEVICE      "filemanager_unknown_file"
 #define ICON_NAME_DIRECTORY             "general_folder"
 #define ICON_NAME_EXECUTABLE            "gnome-fs-executable"
-#define ICON_NAME_FIFO                  "filemanager_unknown_file"
+#define ICON_NAME_SPECIAL               "filemanager_unknown_file"
 #define ICON_NAME_REGULAR               "filemanager_unknown_file"
 #define ICON_NAME_SEARCH_RESULTS        "gnome-fs-search"
-#define ICON_NAME_SOCKET                "filemanager_unknown_file"
 
 #define ICON_NAME_MIME_PREFIX           "gnome-mime-"
 
 
 /* Returns NULL for regular */
 static char *
-get_icon_name (GnomeVFSFileInfo *file_info,
+get_icon_name (GFileInfo *file_info,
 	       const char       *mime_type)
 {
-	if (file_info &&
-	    (file_info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_TYPE)) {
-		switch (file_info->type) {
-		case GNOME_VFS_FILE_TYPE_DIRECTORY:
+	if (file_info) {
+		GFileType type = g_file_info_get_file_type(file_info);
+
+		switch (type) {
+		case G_FILE_TYPE_DIRECTORY:
 			if (mime_type && g_ascii_strcasecmp (mime_type, "x-directory/search") == 0)
 				return g_strdup (ICON_NAME_SEARCH_RESULTS);
 			else
 				return g_strdup (ICON_NAME_DIRECTORY);
-		case GNOME_VFS_FILE_TYPE_FIFO:
-			return g_strdup (ICON_NAME_FIFO);
-		case GNOME_VFS_FILE_TYPE_SOCKET:
-			return g_strdup (ICON_NAME_SOCKET);
-		case GNOME_VFS_FILE_TYPE_CHARACTER_DEVICE:
-			return g_strdup (ICON_NAME_CHARACTER_DEVICE);
-		case GNOME_VFS_FILE_TYPE_BLOCK_DEVICE:
-			return g_strdup (ICON_NAME_BLOCK_DEVICE);
-		case GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK:
+		case G_FILE_TYPE_SPECIAL:
+			return g_strdup (ICON_NAME_SPECIAL);
+		case G_FILE_TYPE_SYMBOLIC_LINK:
 			/* Non-broken symbolic links return the target's type. */
 			return g_strdup (ICON_NAME_BROKEN_SYMBOLIC_LINK);
-		case GNOME_VFS_FILE_TYPE_REGULAR:
-		case GNOME_VFS_FILE_TYPE_UNKNOWN:
+		case G_FILE_TYPE_REGULAR:
+		case G_FILE_TYPE_UNKNOWN:
 		default:
 			break;
 		}
@@ -82,10 +72,8 @@ get_icon_name (GnomeVFSFileInfo *file_info,
 	}
 	
 	if (file_info &&
-	    (file_info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS) &&
-	    (file_info->permissions	& (GNOME_VFS_PERM_USER_EXEC
-					   | GNOME_VFS_PERM_GROUP_EXEC
-					   | GNOME_VFS_PERM_OTHER_EXEC)) &&
+	    g_file_info_get_attribute_boolean (file_info,
+					       G_FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE) &&
 	    (mime_type == NULL || g_ascii_strcasecmp (mime_type, "text/plain") != 0)) {
 		return g_strdup (ICON_NAME_EXECUTABLE);
 	}
@@ -162,7 +150,7 @@ make_generic_mime_name (const char *mime_type)
  */
 gchar **
 hildon_mime_get_icon_names (const gchar      *mime_type,
-			    GnomeVFSFileInfo *file_info)
+			    GFileInfo *file_info)
 {
 	gchar  *name;
 	gchar  *generic;
@@ -205,4 +193,3 @@ hildon_mime_get_icon_names (const gchar      *mime_type,
 
 	return strv;
 }
-

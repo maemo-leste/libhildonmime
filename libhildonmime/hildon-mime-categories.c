@@ -21,11 +21,12 @@
  */
 #include <config.h>
 #include "hildon-mime.h"
-#include <libgnomevfs/gnome-vfs-mime-info.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 static GHashTable *category_hash;
 
@@ -109,6 +110,7 @@ hildon_mime_get_category_from_name (const gchar *category)
 HildonMimeCategory
 hildon_mime_get_category_for_mime_type (const gchar *mime_type)
 {
+#if 0 /* FIXME */
 	const gchar *category;
 
 	category = gnome_vfs_mime_get_value (mime_type, "category");
@@ -118,6 +120,9 @@ hildon_mime_get_category_for_mime_type (const gchar *mime_type)
 	}
 
 	return hildon_mime_get_category_from_name (category);
+#endif
+	assert(0);
+	return HILDON_MIME_CATEGORY_OTHER;
 }
 
 typedef struct XdgDirTimeList XdgDirTimeList;
