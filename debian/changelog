@@ -1,3 +1,9 @@
+libhildonmime (3.0.0-0) stable; urgency=low
+
+  * Replace GnomeVFS with GIO
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Fri, 02 Dec 2016 18:48:32 +0200
+
 libhildonmime (2.1.5-1+0m5) stable; urgency=low
 
   * This entry has been added by BIFH queue processor
