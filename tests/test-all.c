@@ -40,8 +40,8 @@
 		       __FILE__,					\
 		       __LINE__,					\
 		       #a,						\
-		       a,						\
-		       b);						\
+		       b,						\
+		       a);						\
 	}								\
 	} G_STMT_END			
 
@@ -135,7 +135,7 @@ test_get_mime_types (void)
 
 	g_print ("For media player application\n");
 	mimes = hildon_mime_application_get_mime_types ("test/mp_ui.desktop");
-	assert_int (g_list_length (mimes), 24);
+	assert_int (g_list_length (mimes), 28);
 	hildon_mime_application_mime_types_list_free (mimes);
 
 	g_print ("For audio category\n");

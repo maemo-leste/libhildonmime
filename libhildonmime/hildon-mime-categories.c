@@ -28,7 +28,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-static GHashTable *category_hash;
+static GHashTable *category_hash = NULL;
+static GHashTable *mime_hash = NULL;
+
+static void xdg_mime_init (void);
 
 /**
  * hildon_mime_get_category_name:
@@ -110,19 +113,17 @@ hildon_mime_get_category_from_name (const gchar *category)
 HildonMimeCategory
 hildon_mime_get_category_for_mime_type (const gchar *mime_type)
 {
-#if 0 /* FIXME */
 	const gchar *category;
 
-	category = gnome_vfs_mime_get_value (mime_type, "category");
+	xdg_mime_init ();
+
+	category = g_hash_table_lookup (mime_hash, mime_type);
 
 	if (!category) {
 		return HILDON_MIME_CATEGORY_OTHER;
 	}
 
 	return hildon_mime_get_category_from_name (category);
-#endif
-	assert(0);
-	return HILDON_MIME_CATEGORY_OTHER;
 }
 
 typedef struct XdgDirTimeList XdgDirTimeList;
@@ -239,6 +240,7 @@ read_categories (const gchar *file_name)
 			}
 	
 			type_list = g_list_prepend (type_list, types[i]);
+			g_hash_table_insert (mime_hash, g_strdup(types[i]), category);
 		}
 
                 g_hash_table_insert (category_hash, category, type_list);
@@ -496,6 +498,11 @@ xdg_mime_shutdown (void)
 		category_hash = NULL;
 	}
 
+	if (mime_hash) {
+		g_hash_table_destroy (mime_hash);
+		mime_hash = NULL;
+	}
+
 	need_reread = TRUE;
 }
 
@@ -518,7 +525,11 @@ xdg_mime_init (void)
 						       g_str_equal, 
 						       g_free, 
 						       (GDestroyNotify)string_list_free);
-		
+		mime_hash = g_hash_table_new_full (g_str_hash,
+						   g_str_equal,
+						   g_free,
+						   (GDestroyNotify)string_list_free);
+
 		xdg_run_command_on_dirs ((XdgDirectoryFunc) xdg_mime_init_from_directory,
 					 NULL);
 		
