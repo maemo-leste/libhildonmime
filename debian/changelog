@@ -1,3 +1,10 @@
+libhildonmime (3.0.0-1+0m7) stable; urgency=low
+
+  * fix debian/control file dependencies
+  * correctly process upstream freedesktop.org.xml
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Sat, 03 Dec 2016 08:16:11 +0200
+
 libhildonmime (3.0.0-0) stable; urgency=low
 
   * Replace GnomeVFS with GIO
