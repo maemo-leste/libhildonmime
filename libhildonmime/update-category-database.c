@@ -48,6 +48,8 @@ const char *media_types[] = {
 	"message",
 	"model",
 	"multipart",
+	"x-content",
+	"x-epoc",
 };
 
 /* Represents a MIME type */
@@ -303,6 +305,8 @@ static gboolean process_freedesktop_node(Type *type, xmlNode *field,
 	}
 	else if (strcmp((char *)field->name, "comment") == 0 ||
 		 strcmp((char *)field->name, "acronym") == 0 ||
+		 strcmp((char *)field->name, "generic-icon") == 0 ||
+		 strcmp((char *)field->name, "treemagic") == 0 ||
 		 strcmp((char *)field->name, "expanded-acronym") == 0)
 		return FALSE;
 	else if (strcmp(field->name, "alias") == 0 ||
