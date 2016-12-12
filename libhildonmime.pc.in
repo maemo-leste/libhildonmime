@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: libhildonmime
 Description: OSSO MIME-Open library
 Version: @VERSION@
-Requires: gnome-vfs-2.0 dbus-glib-1
+Requires: gio-2.0 dbus-glib-1
 Libs: -L${libdir} -lhildonmime
 Cflags: -I${includedir}
