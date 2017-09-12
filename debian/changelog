@@ -1,3 +1,10 @@
+libhildonmime (3.0.0-1) unstable; urgency=medium
+
+  * update control file to new standard
+  * enable git builds
+
+ -- Ivan J. <parazyd@dyne.org>  Tue, 12 Sep 2017 21:47:00 +0200
+
 libhildonmime (3.0.0-1+1m7) stable; urgency=low
 
   * fix debian/control build dependencies
