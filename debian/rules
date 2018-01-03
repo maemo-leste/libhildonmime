@@ -40,7 +40,7 @@ configure-stamp:
 		--with-compile-warnings=yes --enable-gtk-doc
 	touch configure-stamp
 
-build: build-stamp
+build-arch: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 	$(MAKE)
@@ -82,4 +82,5 @@ binary-arch: install
 	dh_builddeb
 
 binary: binary-indep binary-arch
+build: build-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
