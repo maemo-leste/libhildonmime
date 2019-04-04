@@ -2,11 +2,11 @@ Source: libhildonmime
 Section: libs
 Priority: optional
 Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), automake, libglib2.0-dev (>= 2.42), libdbus-glib-1-dev, gtk-doc-tools, libtool-bin, libxml2-dev
+Build-Depends: debhelper (>= 10), automake, libglib2.0-dev (>= 2.42), libdbus-glib-1-dev, gtk-doc-tools, libtool-bin, libxml2-dev
 Standards-Version: 3.6.1.0
 
 Package: libhildonmime0
-Conflicts: libossomime0 (<< 1.8.5) 
+Conflicts: libossomime0 (<< 1.8.5)
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, hildon-update-category-database (= ${source:Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr
@@ -19,14 +19,6 @@ Section: devel
 Architecture: any
 Depends: libhildonmime0 (= ${source:Version}), libglib2.0-dev (>= 2.42), libdbus-glib-1-dev
 Description: libhildonmime development files
- Development files for the libhildonmime package.
-
-Package: libhildonmime0-dbg
-Section: devel
-Priority: extra
-Architecture: any
-Depends: libhildonmime0 (= ${source:Version})
-Description: libhildonmime debugging symbols
  Development files for the libhildonmime package.
 
 Package: libhildonmime0-doc
