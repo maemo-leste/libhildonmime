@@ -1,3 +1,9 @@
+libhildonmime (3.0.1-1) unstable; urgency=medium
+
+  * Port to buster/beowulf
+
+ -- Merlijn Wajer <parazyd@dyne.org>  Fri, 05 Apr 2019 00:09:00 +0200
+
 libhildonmime (3.0.0-1) unstable; urgency=medium
 
   * update control file to new standard
