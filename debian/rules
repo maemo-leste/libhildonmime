@@ -13,6 +13,7 @@ endif
 	dh $@
 
 override_dh_autoreconf:
+	gtkdocize
 	NOCONFIGURE=1 ./autogen.sh
 
 override_dh_configure:
