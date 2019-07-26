@@ -1,2 +1,2 @@
-usr/lib/libhildonmime.so.*
+usr/lib/*/libhildonmime.so.*
 usr/share/applications/uri-action-defaults.list
