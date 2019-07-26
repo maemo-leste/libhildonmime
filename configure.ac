@@ -3,7 +3,7 @@ AC_PREREQ(2.52)
  
 AC_INIT(libhildonmime, 2.1.3)
 AC_CONFIG_SRCDIR(libhildonmime/hildon-uri.c)
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AM_INIT_AUTOMAKE
 
 dnl Versioning for libhildonmime
 
@@ -47,7 +47,7 @@ GLIB_REQUIRED=2.6.0
 GTK_REQUIRED=2.6.0
 LIBXML_REQUIRED=2.4
 
-GTK_DOC_CHECK([1.3])
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 
 dnl =======================================
 dnl libhildonmime
