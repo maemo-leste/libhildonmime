@@ -175,6 +175,7 @@ main (int argc, char **argv)
 					service,
 					0, 
 					&error);
+	(void)result;
 
 	if (dbus_error_is_set (&error))	{
 		g_printerr ("Failed to acquire service:'%s', error:'%s'\n",

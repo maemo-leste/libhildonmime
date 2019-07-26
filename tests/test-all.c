@@ -454,6 +454,7 @@ test_local_default_actions (void)
 
 	/* Test it is unset */
 	default_action = hildon_uri_get_default_action_by_uri ("http://www.nokia.com/index.html", NULL);
+	(void)default_action;
 /* 	assert_expr (default_action == NULL); */
 
 	/* Test setting a NORMAL action */
