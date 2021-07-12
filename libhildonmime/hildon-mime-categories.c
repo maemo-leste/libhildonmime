@@ -240,7 +240,8 @@ read_categories (const gchar *file_name)
 			}
 	
 			type_list = g_list_prepend (type_list, types[i]);
-			g_hash_table_insert (mime_hash, g_strdup(types[i]), category);
+			g_hash_table_insert (mime_hash, g_strdup(types[i]),
+					     g_strdup(category));
 		}
 
                 g_hash_table_insert (category_hash, category, type_list);
@@ -528,7 +529,7 @@ xdg_mime_init (void)
 		mime_hash = g_hash_table_new_full (g_str_hash,
 						   g_str_equal,
 						   g_free,
-						   (GDestroyNotify)string_list_free);
+						   g_free);
 
 		xdg_run_command_on_dirs ((XdgDirectoryFunc) xdg_mime_init_from_directory,
 					 NULL);
