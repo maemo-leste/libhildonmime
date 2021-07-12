@@ -1,3 +1,9 @@
+libhildonmime (3.0.4-1) unstable; urgency=medium
+
+  * Fix invalid memory access
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Mon, 12 Jul 2021 13:53:33 +0300
+
 libhildonmime (3.0.3-1) unstable; urgency=medium
 
   * Fix debian build system
