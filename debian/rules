@@ -9,12 +9,14 @@ else
   confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 endif
 
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
 %:
 	dh $@
 
 override_dh_autoreconf:
 	gtkdocize
-	NOCONFIGURE=1 ./autogen.sh
+	dh_autoreconf --as-needed
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
