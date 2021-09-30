@@ -446,16 +446,124 @@ static gboolean category_is_valid (const char *category)
 	return FALSE;
 }
 
+static gint compare_types (gconstpointer a, gconstpointer b)
+{
+	const Type *ta = a;
+	const Type *tb = b;
+	gint rv;
+
+	if ((rv = strcmp (ta->media, tb->media)) == 0)
+		rv = strcmp (ta->subtype, tb->subtype);
+
+	return rv;
+}
+
+static void append_category_type(const char *category_name, Type *type)
+{
+	GSList *list, *nlist;
+	GHashTableIter iter;
+	gpointer key, value;
+
+	g_hash_table_iter_init (&iter, categories_hash);
+
+	while (g_hash_table_iter_next (&iter, &key, &value))
+	{
+		GSList *l = g_slist_find_custom (value, type, compare_types);
+
+		if (l)
+		{
+			if (strcmp (key, category_name) != 0)
+			{
+				g_print("* Warning: Mime type '%s/%s'' already in category '%s'\n",
+					type->media, type->subtype, (char *)key);
+			}
+
+			return;
+		}
+	}
+
+	list = g_hash_table_lookup (categories_hash, category_name);
+	nlist = g_slist_append (list, type);
+
+	if (list == NULL)
+	{
+		g_hash_table_insert (categories_hash, g_strdup (category_name),
+				     nlist);
+	}
+}
+
+static char *get_type_category(Type *type)
+{
+	char *category_name = NULL;
+
+	if (strcmp (type->media, "image") == 0)
+		category_name = "images";
+	else if (strcmp (type->media, "audio") == 0)
+		category_name = "audio";
+	else if (strcmp (type->media, "video") == 0)
+		category_name = "video";
+	else if (strcmp (type->media, "message") == 0)
+		category_name = "emails";
+	else if (strcmp (type->media, "application") == 0)
+	{
+		if (strcmp (type->subtype, "x-xbel") == 0 ||
+		    strcmp (type->subtype, "x-mozilla-bookmarks") == 0)
+		{
+			category_name = "bookmarks";
+		}
+	}
+
+	if (category_name)
+		category_name = g_strdup (category_name);
+
+	return category_name;
+}
+
+static char *get_generic_icon_category(xmlNode *field)
+{
+	char *category_name = NULL;
+	char *name;
+
+	name = xmlGetNsProp(field, "name", NULL);
+
+	if (strcmp (name, "audio-x-generic") == 0)
+		category_name = "audio";
+	else if (strcmp (name, "image-x-generic") == 0)
+		category_name = "images";
+	else if (strcmp (name, "video-x-generic") == 0)
+		category_name = "video";
+	else if (strcmp (name, "x-office-address-book") == 0)
+		category_name = "contacts";
+	else if (strcmp (name, "x-office-calendar") == 0 ||
+		 strcmp (name, "x-office-document") == 0 ||
+		 strcmp (name, "x-office-presentation") == 0 ||
+		 strcmp (name, "x-office-spreadsheet") == 0)
+	{
+		category_name = "documents";
+	}
+
+	xmlFree (name);
+
+	if (category_name)
+		category_name = g_strdup (category_name);
+
+	return category_name;
+}
+
 /* 'node' is a <mime-type> node from a source file, whose type is 'type'.
  * Process all the child elements, setting 'error' if anything goes wrong.
  */
 static void load_type(Type *type, xmlNode *node, GError **error)
 {
 	xmlNode *field;
+	char *category_name;
+	char *osso_category_name = NULL;
 
 	g_return_if_fail(type != NULL);
 	g_return_if_fail(node != NULL);
 	g_return_if_fail(error != NULL);
+
+	category_name = get_type_category(type);
 
 	for (field = node->xmlChildrenNode; field; field = field->next)
 	{
@@ -466,6 +574,13 @@ static void load_type(Type *type, xmlNode *node, GError **error)
 
 		if (field->ns && strcmp(field->ns->href, FREE_NS) == 0)
 		{
+			if (!category_name &&
+			    strcmp ((char *)field->name, "generic-icon") == 0)
+			{
+				category_name =
+					get_generic_icon_category (field);
+			}
+
 			if (process_freedesktop_node(type, field, error))
 			{
 				g_return_if_fail(*error == NULL);
@@ -493,16 +608,7 @@ static void load_type(Type *type, xmlNode *node, GError **error)
 				
 			}
 			else
-			{
-				GSList *list, *nlist;
-
-				list = g_hash_table_lookup(categories_hash, category_name);
-				nlist = g_slist_append (list, type);
-				if (list == NULL)
-					g_hash_table_insert(categories_hash, 
-							    g_strdup (category_name), nlist);    
-				
-			}
+				osso_category_name = g_strdup (category_name);
 
 			xmlFree (category_name);
 		}
@@ -530,6 +636,20 @@ static void load_type(Type *type, xmlNode *node, GError **error)
 		remove_old(type, field);
 
 		xmlAddChild(xmlDocGetRootElement(type->output), copy);
+	}
+
+	if (category_name)
+	{
+		if (osso_category_name)
+			g_free (osso_category_name);
+
+		osso_category_name = category_name;
+	}
+
+	if (osso_category_name)
+	{
+		append_category_type (osso_category_name, type);
+		g_free (osso_category_name);
 	}
 }
 
