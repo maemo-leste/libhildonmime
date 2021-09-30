@@ -1,3 +1,9 @@
+libhildonmime (3.1.0) unstable; urgency=medium
+
+  *  try to guess category from mime type/subtype or generic-icon
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Thu, 30 Sep 2021 14:57:11 +0300
+
 libhildonmime (3.0.4-1) unstable; urgency=medium
 
   * Fix invalid memory access
