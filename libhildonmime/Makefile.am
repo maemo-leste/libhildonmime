@@ -26,8 +26,13 @@ libhildonmime_la_SOURCES = 	\
 	hildon-uri.c 		\
 	hildon-mime-patterns.c
 
-bin_PROGRAMS = hildon-update-category-database
+bin_PROGRAMS = hildon-update-category-database hildon-update-desktop-database
+
 hildon_update_category_database_SOURCES = update-category-database.c
 hildon_update_category_database_CFLAGS = $(UPDATE_CATEGORY_CFLAGS) \
 	-Wno-pointer-sign
 hildon_update_category_database_LDADD = $(UPDATE_CATEGORY_LIBS)
+
+hildon_update_desktop_database_SOURCES = update-desktop-database.c
+hildon_update_desktop_database_CFLAGS = $(UPDATE_DESKTOP_CFLAGS)
+hildon_update_desktop_database_LDADD = $(UPDATE_DESKTOP_LIBS)

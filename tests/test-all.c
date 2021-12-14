@@ -626,7 +626,7 @@ main (int argc, char **argv)
 		g_clear_error (&error);
 		return 1;
 	}
-	
+
 	tmp = g_strdup_printf ("update-mime-database %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
@@ -649,6 +649,17 @@ main (int argc, char **argv)
 		return 1;
 	}
 
+	tmp = g_strdup_printf ("../libhildonmime/hildon-update-desktop-database %s",
+			       TEST_DATADIR "/applications");
+	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
+	g_free (tmp);
+	if (!ret) {
+		g_printerr ("Couldn't launch ../libhildonmime/hildon-update-desktop-database: %s\n",
+			    error->message);
+		g_clear_error (&error);
+		return 1;
+	}
+
 	if (1) {
 		test_get_mime_types ();
 		test_get_actions ();
@@ -665,4 +676,3 @@ main (int argc, char **argv)
 
 	return 0;
 }
-

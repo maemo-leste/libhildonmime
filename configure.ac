@@ -71,6 +71,12 @@ PKG_CHECK_MODULES(UPDATE_CATEGORY, [
 AC_SUBST(UPDATE_CATEGORY_CFLAGS)
 AC_SUBST(UPDATE_CATEGORY_LIBS)
 
+PKG_CHECK_MODULES(UPDATE_DESKTOP, [
+        glib-2.0 >= $GLIB_REQUIRED
+])
+AC_SUBST(UPDATE_DESKTOP_CFLAGS)
+AC_SUBST(UPDATE_DESKTOP_LIBS)
+
 AC_ARG_ENABLE(update-categorydb,
    AC_HELP_STRING([--disable-update-categoryb],
                    [disable the update-category-database after install [default=no]]),,
