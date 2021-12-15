@@ -1,3 +1,9 @@
+libhildonmime (4.0.0) unstable; urgency=medium
+
+  * Add hildon-update-desktop-database tool to generate schemeinfo.cache
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Wed, 15 Dec 2021 09:11:12 +0200
+
 libhildonmime (3.1.0) unstable; urgency=medium
 
   *  try to guess category from mime type/subtype or generic-icon
