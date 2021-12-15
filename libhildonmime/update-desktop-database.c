@@ -370,29 +370,6 @@ open_temp_cache_file (const char *dir,
 }
 
 static void
-add_mime_type (const char *mime_type, GList *desktop_files, FILE *f)
-{
-  GString *list;
-  GList *desktop_file;
-
-  list = g_string_new (mime_type);
-  g_string_append_c (list, '=');
-  desktop_files = g_list_sort (desktop_files, (GCompareFunc) g_strcmp0);
-  for (desktop_file = desktop_files;
-       desktop_file != NULL;
-       desktop_file = desktop_file->next)
-    {
-      g_string_append (list, (const char *) desktop_file->data);
-      g_string_append_c (list, ';');
-    }
-  g_string_append_c (list, '\n');
-
-  fputs (list->str, f);
-
-  g_string_free (list, TRUE);
-}
-
-static void
 add_scheme_type (const char *scheme_type, GList *application_ids, FILE *f)
 {
   GString *list;
