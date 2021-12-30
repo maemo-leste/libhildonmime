@@ -29,7 +29,7 @@ Description: libhildonmime library documentation
 Package: hildon-update-category-database
 Section: misc
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, shared-mime-info, desktop-file-utils
 Description: Tool for managing the mime/category database
  This package contains a tool that manages the mime/category mapping
  database.
