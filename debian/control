@@ -1,7 +1,7 @@
 Source: libhildonmime
 Section: libs
 Priority: optional
-Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
+Maintainer: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
 Build-Depends: debhelper (>= 10), automake, libglib2.0-dev (>= 2.42), libdbus-glib-1-dev, gtk-doc-tools, libtool-bin, libxml2-dev
 Standards-Version: 3.6.1.0
 
@@ -29,7 +29,8 @@ Description: libhildonmime library documentation
 Package: hildon-update-category-database
 Section: misc
 Architecture: any
-Depends: ${shlibs:Depends}, shared-mime-info, desktop-file-utils
+Pre-Depends: shared-mime-info, desktop-file-utils
+Depends: ${shlibs:Depends}
 Description: Tool for managing the mime/category database
  This package contains a tool that manages the mime/category mapping
  database.
