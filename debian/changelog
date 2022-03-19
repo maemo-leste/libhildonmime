@@ -1,3 +1,10 @@
+libhildonmime (4.0.1) unstable; urgency=medium
+
+  * fix get_service_name_by_mime_type() not able to find non-default application
+    service
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Sat, 19 Mar 2022 17:36:35 +0200
+
 libhildonmime (4.0.0) unstable; urgency=medium
 
   * Add hildon-update-desktop-database tool to generate schemeinfo.cache
