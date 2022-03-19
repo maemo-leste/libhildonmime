@@ -150,9 +150,10 @@ get_service_name_from_desktop_file (const char *id)
 static gchar *
 get_service_name_by_mime_type (const char *mime_type)
 {
-	GList *list;
+	GList *all, *l;
 	GAppInfo *info;
 	gchar *content_type;
+	gchar *service_name = NULL;
 
 	dprint ("Getting default desktop entry for mime type '%s'...", mime_type);
 
@@ -164,41 +165,43 @@ get_service_name_by_mime_type (const char *mime_type)
 
 	info = g_app_info_get_default_for_type (content_type, FALSE);
 	if (info) {
-		gchar *service_name = NULL;
-
-		g_free(content_type);
 		service_name = get_service_name_from_desktop_file (g_app_info_get_id (info));
-
 		g_object_unref (info);
 
-		dprint ("Found service name '%s' (default desktop entry)", service_name);
+		if (service_name && *service_name) {
+			g_free (content_type);
+			dprint ("Found service name '%s' (default desktop entry)", service_name);
 
-		return service_name;
+			return service_name;
+		}
+
+		g_free (service_name);
 	}
 
 	dprint ("Getting all desktop entries...");
 
 	/* Failing that, try something from the complete list */
-	list = g_app_info_get_all_for_type (content_type);
-	if (list) {
-		gchar *service_name = NULL;
 
-		g_free(content_type);
-		service_name = get_service_name_from_desktop_file (g_app_info_get_id (list->data));
+	all = g_app_info_get_all_for_type (content_type);
+	for (l = all; l; l = l->next) {
+		service_name = get_service_name_from_desktop_file (g_app_info_get_id (l->data));
 
-		dprint ("Found service name '%s' (first entry found)", service_name);
+		if (service_name && *service_name) {
+			dprint ("Found service name '%s' (first entry found)", service_name);
+			break;
+		}
 
-		g_list_foreach (list, (GFunc) g_object_unref, NULL);
-		g_list_free (list);
-
-		return service_name;
+		g_free (service_name);
+		service_name = NULL;
 	}
 
-	g_free(content_type);
+	g_list_free_full (all, g_object_unref);
+	g_free (content_type);
 
-	dprint ("No service name found");
+	if (!service_name)
+		dprint ("No service name found");
 
-	return NULL;
+	return service_name;
 }
 
 static gchar *
