@@ -50,6 +50,7 @@ const char *media_types[] = {
 	"multipart",
 	"x-content",
 	"x-epoc",
+	"font",
 };
 
 /* Represents a MIME type */
