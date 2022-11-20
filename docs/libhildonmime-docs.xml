@@ -15,11 +15,28 @@
 
     <chapter id="general">
       <title>General</title>
-      <xi:include href="xml/hildon-mime.xml"/>
-      <xi:include href="xml/hildon-mime-patterns.xml"/>
-      <xi:include href="xml/hildon-uri.xml"/>
+      <xi:include href="xml/hildon-mime.xml">
+        <xi:fallback>
+	  <para>
+	    not available.
+	  </para>
+	</xi:fallback>
+      </xi:include>
+      <xi:include href="xml/hildon-mime-patterns.xml">
+        <xi:fallback>
+	  <para>
+	    not available.
+	  </para>
+	</xi:fallback>
+      </xi:include>
+      <xi:include href="xml/hildon-uri.xml">
+        <xi:fallback>
+	  <para>
+	    not available.
+	  </para>
+	</xi:fallback>
+      </xi:include>
     </chapter>
-
   </part>
 
   <index id="symbols">
@@ -27,6 +44,12 @@
   </index>
   <index role="hierarchy" id="hierarchy">
     <title>Object Hierarchy</title>
-    <xi:include href="xml/tree_index.sgml"/>
+    <xi:include href="xml/tree_index.sgml">
+        <xi:fallback>
+	  <para>
+	    not available.
+	  </para>
+	</xi:fallback>
+      </xi:include>
   </index>
 </book>
