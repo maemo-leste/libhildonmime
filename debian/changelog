@@ -1,3 +1,8 @@
+libhildonmime (4.0.2) unstable; urgency=medium
+  * Fix for compatibility with gtc-doc >= 1.30
+
+ -- Blagovest Petrov <blagovest@petrovs.info> Sun, 20 Nov 2022 21:00:21 +0200
+
 libhildonmime (4.0.1) unstable; urgency=medium
 
   * fix get_service_name_by_mime_type() not able to find non-default application
