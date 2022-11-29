@@ -550,44 +550,44 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 				      const gchar    *file,
 				      const gchar    *mime_type)
 {
-       AppEntry *entry;
-       gchar    *service_name;
-       gboolean  success;
+	AppEntry *entry;
+	gchar    *service_name;
+	gboolean  success;
 
-       if (con == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no D-BUS connection!");
-               LOG_CLOSE();
-               return 0;
-       }
+	if (con == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no D-BUS connection!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       if (file == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no file specified!");
-               LOG_CLOSE();
-               return 0;
-       }
-       
-       if (mime_type == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no mime-type specified!");
-               LOG_CLOSE();
-               return 0;
-       }
+	if (file == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no file specified!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       service_name = get_service_name_by_mime_type (mime_type);
-       if (!service_name) {
-               dprint ("No D-Bus service for mime type '%s'", mime_type);
-               return 0;
-       }
+	if (mime_type == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no mime-type specified!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       entry = g_new0 (AppEntry, 1);
+	service_name = get_service_name_by_mime_type (mime_type);
+	if (!service_name) {
+		dprint ("No D-Bus service for mime type '%s'", mime_type);
+		return 0;
+	}
 
-       entry->service_name = service_name;
-       entry->files = g_slist_append (NULL, (gpointer) file);
+	entry = g_new0 (AppEntry, 1);
 
-       success = mime_launch (con, entry);
-       app_entry_free (entry);
+	entry->service_name = service_name;
+	entry->files = g_slist_append (NULL, (gpointer) file);
 
-       return success ? 1 : 0;
+	success = mime_launch (con, entry);
+	app_entry_free (entry);
+
+	return success ? 1 : 0;
 }
