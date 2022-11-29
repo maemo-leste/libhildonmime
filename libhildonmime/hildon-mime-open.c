@@ -577,8 +577,14 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 
 	service_name = get_service_name_by_mime_type (mime_type);
 	if (!service_name) {
-		dprint ("No D-Bus service for mime type '%s'", mime_type);
-		return 0;
+		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+		GError *error = NULL;
+		gboolean ret = g_app_info_launch_default_for_uri(file, NULL, &error);
+		if (error) {
+			dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
+			g_error_free(error);
+		}
+		return ret;
 	}
 
 	entry = g_new0 (AppEntry, 1);
@@ -589,5 +595,5 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 	success = mime_launch (con, entry);
 	app_entry_free (entry);
 
-	return success ? 1 : 0;
+	return success;
 }
