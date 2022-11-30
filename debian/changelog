@@ -1,7 +1,15 @@
+libhildonmime (4.0.3) unstable; urgency=medium
+
+  * add 'font' media type to update-mime-database (thanks to buZz)
+  * Use g_app_info_launch_default_for_uri as a fallback when opening
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Wed, 30 Nov 2022 07:21:11 +0200
+
 libhildonmime (4.0.2) unstable; urgency=medium
+
   * Fix for compatibility with gtc-doc >= 1.30
 
- -- Blagovest Petrov <blagovest@petrovs.info> Sun, 20 Nov 2022 21:00:21 +0200
+ -- Blagovest Petrov <blagovest@petrovs.info>  Sun, 20 Nov 2022 21:00:21 +0200
 
 libhildonmime (4.0.1) unstable; urgency=medium
 
