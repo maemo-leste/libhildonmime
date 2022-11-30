@@ -413,26 +413,27 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 
 	service_name = get_service_name_by_path (file);
 	if (!service_name) {
-		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
 		GError *error = NULL;
-		gboolean ret = g_app_info_launch_default_for_uri(file, NULL, &error);
+
+		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+		success = g_app_info_launch_default_for_uri (file, NULL, &error);
+
 		if (error) {
 			dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
-			g_error_free(error);
+			g_error_free (error);
 		}
-		return ret;
+	} else {
+		entry = g_new0 (AppEntry, 1);
+
+		entry->service_name = service_name;
+		entry->files = g_slist_append (NULL, (gpointer) file);
+
+		success = mime_launch (con, entry);
+
+		app_entry_free (entry);
 	}
 
-	entry = g_new0 (AppEntry, 1);
-
-	entry->service_name = service_name;
-	entry->files = g_slist_append (NULL, (gpointer) file);
-
-	success = mime_launch (con, entry);
-
-	app_entry_free (entry);
-
-	return success;
+	return success ? 1 : 0;
 }
 
 /**
@@ -500,15 +501,17 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 					
 			entry->files = g_slist_append (entry->files, file);
 		} else {
-			dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
 			GError *error = NULL;
-			g_app_info_launch_default_for_uri(file, NULL, &error);
+
+			dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+			success &= g_app_info_launch_default_for_uri (file, NULL, &error);
+
 			if (error) {
 				dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
-				g_error_free(error);
+				g_error_free (error);
 			}
 		}
-	}	
+	}
 
 	g_hash_table_foreach (apps, (GHFunc) mime_open_file_list_foreach, &list);
 
@@ -524,7 +527,7 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 	
 	g_slist_free (list);
 	g_hash_table_destroy (apps);
-	
+
 	return success ? 1 : 0;
 }
 
@@ -577,23 +580,24 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 
 	service_name = get_service_name_by_mime_type (mime_type);
 	if (!service_name) {
-		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
 		GError *error = NULL;
-		gboolean ret = g_app_info_launch_default_for_uri(file, NULL, &error);
+
+		success = g_app_info_launch_default_for_uri (file, NULL, &error);
+		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+
 		if (error) {
 			dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
-			g_error_free(error);
+			g_error_free (error);
 		}
-		return ret;
+	} else {
+		entry = g_new0 (AppEntry, 1);
+
+		entry->service_name = service_name;
+		entry->files = g_slist_append (NULL, (gpointer) file);
+
+		success = mime_launch (con, entry);
+		app_entry_free (entry);
 	}
 
-	entry = g_new0 (AppEntry, 1);
-
-	entry->service_name = service_name;
-	entry->files = g_slist_append (NULL, (gpointer) file);
-
-	success = mime_launch (con, entry);
-	app_entry_free (entry);
-
-	return success;
+	return success ? 1 : 0;
 }
