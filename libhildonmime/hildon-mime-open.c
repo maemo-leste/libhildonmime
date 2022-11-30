@@ -33,11 +33,13 @@
 #include <string.h>
 
 #include <dbus/dbus-glib.h>
+#include <gio/gio.h>
 
 #include "hildon-mime.h"
 #include "hildon-uri.h"
 
 #include <syslog.h>
+
 #define LOG_CLOSE() closelog()
 #define DLOG_OPEN(X) openlog(X, LOG_PID | LOG_NDELAY, LOG_DAEMON)
 #define DLOG_CRIT(...) syslog(LOG_CRIT | LOG_DAEMON, __VA_ARGS__)
@@ -411,8 +413,14 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 
 	service_name = get_service_name_by_path (file);
 	if (!service_name) {
-		dprint ("No D-Bus service for file '%s'", file);
-		return 0;
+		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+		GError *error = NULL;
+		gboolean ret = g_app_info_launch_default_for_uri(file, NULL, &error);
+		if (error) {
+			dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
+			g_error_free(error);
+		}
+		return ret;
 	}
 
 	entry = g_new0 (AppEntry, 1);
@@ -424,7 +432,7 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 
 	app_entry_free (entry);
 
-	return success ? 1 : 0;
+	return success;
 }
 
 /**
@@ -492,8 +500,14 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 					
 			entry->files = g_slist_append (entry->files, file);
 		} else {
-			dprint ("No D-Bus service for file '%s'", file);
-		}			
+			dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+			GError *error = NULL;
+			g_app_info_launch_default_for_uri(file, NULL, &error);
+			if (error) {
+				dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
+				g_error_free(error);
+			}
+		}
 	}	
 
 	g_hash_table_foreach (apps, (GHFunc) mime_open_file_list_foreach, &list);
@@ -536,44 +550,50 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 				      const gchar    *file,
 				      const gchar    *mime_type)
 {
-       AppEntry *entry;
-       gchar    *service_name;
-       gboolean  success;
+	AppEntry *entry;
+	gchar    *service_name;
+	gboolean  success;
 
-       if (con == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no D-BUS connection!");
-               LOG_CLOSE();
-               return 0;
-       }
+	if (con == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no D-BUS connection!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       if (file == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no file specified!");
-               LOG_CLOSE();
-               return 0;
-       }
-       
-       if (mime_type == NULL) {
-               DLOG_OPEN("libossomime");
-               DLOG_ERR_F("error: no mime-type specified!");
-               LOG_CLOSE();
-               return 0;
-       }
+	if (file == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no file specified!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       service_name = get_service_name_by_mime_type (mime_type);
-       if (!service_name) {
-               dprint ("No D-Bus service for mime type '%s'", mime_type);
-               return 0;
-       }
+	if (mime_type == NULL) {
+		DLOG_OPEN("libossomime");
+		DLOG_ERR_F("error: no mime-type specified!");
+		LOG_CLOSE();
+		return 0;
+	}
 
-       entry = g_new0 (AppEntry, 1);
+	service_name = get_service_name_by_mime_type (mime_type);
+	if (!service_name) {
+		dprint ("No D-Bus service for file '%s' trying xdg-mime", file);
+		GError *error = NULL;
+		gboolean ret = g_app_info_launch_default_for_uri(file, NULL, &error);
+		if (error) {
+			dprint ("g_app_info_launch_default_for_uri for %s failed with %s", file, error->message);
+			g_error_free(error);
+		}
+		return ret;
+	}
 
-       entry->service_name = service_name;
-       entry->files = g_slist_append (NULL, (gpointer) file);
+	entry = g_new0 (AppEntry, 1);
 
-       success = mime_launch (con, entry);
-       app_entry_free (entry);
+	entry->service_name = service_name;
+	entry->files = g_slist_append (NULL, (gpointer) file);
 
-       return success ? 1 : 0;
+	success = mime_launch (con, entry);
+	app_entry_free (entry);
+
+	return success;
 }
