@@ -23,6 +23,7 @@
 #include <config.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <gio/gio.h>
 
 #include "hildon-mime.h"
 
@@ -2285,7 +2286,7 @@ hildon_uri_open (const gchar      *uri,
 	gchar            *scheme;
 	GSList           *uris = NULL;
 	const gchar      *str;
-	gboolean          ok;
+	gboolean          ok = FALSE;
 	gboolean          cleanup_action = FALSE;
 
 	DEBUG_MSG (("URI: Attempting to open URI:'%s' with %s action specified",
@@ -2307,7 +2308,7 @@ hildon_uri_open (const gchar      *uri,
 
 	scheme = hildon_uri_get_scheme_from_uri (uri, error);
 	if (!scheme || scheme[0] == '\0') {
-		return FALSE;
+		goto cleanup;
 	}
 
 	action = action_to_try;
@@ -2346,29 +2347,37 @@ hildon_uri_open (const gchar      *uri,
 			g_clear_error (error);
 
 			if (!action) {
-				gchar *error_str;
+				GAppInfo *app_info = g_app_info_get_default_for_uri_scheme (scheme);
 
-				error_str = g_strdup_printf 
-					("No actions exist for the scheme '%s'", scheme);
+				if (app_info) {
+					GList *uri_list = g_list_append (NULL, (gchar*)uri);
+
+					g_app_info_launch_uris_async (app_info, uri_list, NULL, NULL, NULL, NULL);
+					g_list_free (uri_list);
+					g_object_unref (app_info);
+					/* Update the task navigator */
+					ok = uri_launch_show_animation (connection);
+				} else {
+					gchar *error_str = g_strdup_printf ("No actions or XDG applications "
+									    "exist for the scheme '%s'", scheme);
 				
-				DEBUG_MSG (("URI: %s", error_str));
+					DEBUG_MSG (("URI: %s", error_str));
 
-				g_set_error (error,
-					     HILDON_URI_ERROR,
-					     HILDON_URI_NO_ACTIONS,
-					     "%s",
-					     error_str);
+					g_set_error (error,
+						     HILDON_URI_ERROR,
+						     HILDON_URI_NO_ACTIONS,
+						     "%s",
+						     error_str);
 
-				g_free (error_str);
+					g_free (error_str);
+				}
 
-				return FALSE;
+				goto cleanup;
 			}
 
  			DEBUG_MSG (("URI: Using first action available for scheme:'%s'", scheme));
 		}
 	}
-
-	g_free (scheme);
 
 	uris = g_slist_append (uris, (gchar*)uri);
 	ok = uri_launch (connection, action, uris);
@@ -2388,6 +2397,10 @@ hildon_uri_open (const gchar      *uri,
 			     "%s",
 			     str);
 	}
+
+cleanup:
+	g_free(scheme);
+	dbus_connection_unref(connection);
 
 	return ok;
 }
