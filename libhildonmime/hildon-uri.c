@@ -23,6 +23,7 @@
 #include <config.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <gio/gio.h>
 
 #include "hildon-mime.h"
 
@@ -2346,10 +2347,21 @@ hildon_uri_open (const gchar      *uri,
 			g_clear_error (error);
 
 			if (!action) {
-				gchar *error_str;
 
+				/* Try XDG mime */
+				GAppInfo *app_info = g_app_info_get_default_for_uri_scheme(scheme);
+				if (app_info) {
+					GList *uri_list = g_list_append(NULL, (gchar*)uri);
+					gboolean ret = g_app_info_launch_uris(app_info, uri_list, NULL, NULL);
+					g_list_free(uri_list);
+					g_object_unref(app_info);
+					if (ret)
+						return TRUE;
+				}
+
+				gchar *error_str;
 				error_str = g_strdup_printf 
-					("No actions exist for the scheme '%s'", scheme);
+					("No actions or XDG applications exist for the scheme '%s'", scheme);
 				
 				DEBUG_MSG (("URI: %s", error_str));
 
