@@ -1,3 +1,9 @@
+libhildonmime (4.0.4) unstable; urgency=medium
+
+  * try XDG when opening urls and no action is available
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Thu, 16 Mar 2023 12:16:47 +0200
+
 libhildonmime (4.0.3) unstable; urgency=medium
 
   * add 'font' media type to update-mime-database (thanks to buZz)
