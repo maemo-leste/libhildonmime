@@ -210,6 +210,7 @@ uri_action_type_to_string (HildonURIActionType type)
 	case HILDON_URI_ACTION_NORMAL:   return "Normal";
 	case HILDON_URI_ACTION_NEUTRAL:  return "Neutral";
 	case HILDON_URI_ACTION_FALLBACK: return "Fallback";
+	case HILDON_URI_ACTION_XDG:      return "XDG";
 	}
 
 	return "Unknown";
@@ -1330,6 +1331,37 @@ uri_launch (DBusConnection  *connection,
 	return success;
 }
 
+static gboolean
+uri_xdg_open(const gchar *uri, const gchar *scheme, GError **error)
+{
+	/* Try XDG mime */
+	GAppInfo *app_info = g_app_info_get_default_for_uri_scheme(scheme);
+	if (app_info) {
+		GList *uri_list = g_list_append(NULL, (gchar*)uri);
+		gboolean ret = g_app_info_launch_uris(app_info, uri_list, NULL, NULL);
+		g_list_free(uri_list);
+		g_object_unref(app_info);
+		if (ret)
+			return TRUE;
+	}
+
+	gchar *error_str;
+	error_str = g_strdup_printf
+		("No actions or XDG applications exist for the scheme '%s'", scheme);
+
+	DEBUG_MSG (("URI: %s", error_str));
+
+	g_set_error (error,
+				HILDON_URI_ERROR,
+				HILDON_URI_NO_ACTIONS,
+				"%s",
+				error_str);
+
+	g_free (error_str);
+
+	return FALSE;
+}
+
 /*
  * External API
  */ 
@@ -2100,6 +2132,20 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 }
 
 /**
+ * hildon_uri_get_xdg_action
+ *
+ * This returns the @HildonURIAction which will use xdg-open
+ * for any sheme
+ *
+ * Return: The a xdg-open action.
+ **/
+HildonURIAction *
+hildon_uri_get_xdg_action (void)
+{
+	return uri_action_new (HILDON_URI_ACTION_XDG, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+}
+
+/**
  * hildon_uri_set_default_action:
  * @scheme: A string which represents a scheme. 
  * @action: A @HildonURIAction pointer.
@@ -2312,76 +2358,62 @@ hildon_uri_open (const gchar      *uri,
 	}
 
 	action = action_to_try;
-	if (!action) {
-		DEBUG_MSG (("URI: Attempting to open URI:'%s' using the default "
-			    "since no action was given.",
-			    uri));
-		
-		action = hildon_uri_get_default_action_by_uri (uri, error);
-		cleanup_action = TRUE;
 
-		if (!action) {
-			GSList *actions;
-
-			/* The error parameter is NULL here since it
-			 * checks the scheme is ok and we have already
-			 * done that in this function, plus if we get
-			 * an error further down, we want to use it
-			 * for that.
-			 */
-			actions = hildon_uri_get_actions_by_uri (uri, -1, NULL);
-
-			/* At this stage we choose the first action
-			 * available from the long list picked up in
-			 * the desktop file. 
-			 */
-			if (actions) {
-				action = g_slist_nth_data (actions, 0);
-				if (action) {
-					hildon_uri_action_ref (action);
-				}
-
-				hildon_uri_free_actions (actions);
-			}
-
-			g_clear_error (error);
-
-			if (!action) {
-				GAppInfo *app_info = g_app_info_get_default_for_uri_scheme (scheme);
-
-				if (app_info) {
-					GList *uri_list = g_list_append (NULL, (gchar*)uri);
-
-					g_app_info_launch_uris_async (app_info, uri_list, NULL, NULL, NULL, NULL);
-					g_list_free (uri_list);
-					g_object_unref (app_info);
-					/* Update the task navigator */
-					ok = uri_launch_show_animation (connection);
-				} else {
-					gchar *error_str = g_strdup_printf ("No actions or XDG applications "
-									    "exist for the scheme '%s'", scheme);
-				
-					DEBUG_MSG (("URI: %s", error_str));
-
-					g_set_error (error,
-						     HILDON_URI_ERROR,
-						     HILDON_URI_NO_ACTIONS,
-						     "%s",
-						     error_str);
-
-					g_free (error_str);
-				}
-
-				goto cleanup;
-			}
-
- 			DEBUG_MSG (("URI: Using first action available for scheme:'%s'", scheme));
-		}
+	if (action && action->type == HILDON_URI_ACTION_XDG) {
+		ok = uri_xdg_open (uri, scheme, error);
+		if (!ok)
+			action = NULL;
 	}
 
-	uris = g_slist_append (uris, (gchar*)uri);
-	ok = uri_launch (connection, action, uris);
-	g_slist_free (uris);
+	if (!ok) {
+		if (!action) {
+			DEBUG_MSG (("URI: Attempting to open URI:'%s' using the default since no action "
+					"was given or a XDG action was given that could not be serviced.",
+					uri));
+
+			action = hildon_uri_get_default_action_by_uri (uri, error);
+			cleanup_action = TRUE;
+
+			if (!action) {
+				GSList *actions;
+
+				/* The error parameter is NULL here since it
+				* checks the scheme is ok and we have already
+				* done that in this function, plus if we get
+				* an error further down, we want to use it
+				* for that.
+				*/
+				actions = hildon_uri_get_actions_by_uri (uri, -1, NULL);
+
+				/* At this stage we choose the first action
+				* available from the long list picked up in
+				* the desktop file.
+				*/
+				if (actions) {
+					action = g_slist_nth_data (actions, 0);
+					if (action) {
+						hildon_uri_action_ref (action);
+					}
+
+					hildon_uri_free_actions (actions);
+				}
+
+				g_clear_error (error);
+
+				if (!action)
+				{
+					ok = uri_xdg_open (uri, scheme, error);
+
+				}
+
+				DEBUG_MSG (("URI: Using first action available for scheme:'%s'", scheme));
+			}
+		}
+
+		uris = g_slist_append (uris, (gchar*)uri);
+		ok = uri_launch (connection, action, uris);
+		g_slist_free (uris);
+	}
 
 	if (cleanup_action) {
 		hildon_uri_action_unref (action);

@@ -63,11 +63,14 @@ typedef struct _HildonURIAction HildonURIAction;
  * types, even if the mime type is unknown.
  * @HILDON_URI_ACTION_FALLBACK: This type of action is used exclusively
  * when the mime type is unknown.
+ * @HILDON_URI_ACTION_XDG: This type of action is used exclusively
+ * when xdg-open should be used instead of a osso service
  **/
 typedef enum {
 	HILDON_URI_ACTION_NORMAL,
 	HILDON_URI_ACTION_NEUTRAL,
 	HILDON_URI_ACTION_FALLBACK,
+	HILDON_URI_ACTION_XDG
 } HildonURIActionType;
 
 typedef enum { 
@@ -109,6 +112,7 @@ HildonURIAction *   hildon_uri_get_default_action            (const gchar       
 							      GError              **error);
 HildonURIAction *   hildon_uri_get_default_action_by_uri     (const gchar          *uri,
 							      GError              **error);
+HildonURIAction *   hildon_uri_get_xdg_action                (void);
 gboolean            hildon_uri_set_default_action            (const gchar          *scheme,
 							      HildonURIAction      *action,
 							      GError              **error);
