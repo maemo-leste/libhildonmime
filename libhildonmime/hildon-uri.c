@@ -2334,6 +2334,7 @@ hildon_uri_open (const gchar      *uri,
 	const gchar      *str;
 	gboolean          ok = FALSE;
 	gboolean          cleanup_action = FALSE;
+	gboolean          xdg_attempted = FALSE;
 
 	DEBUG_MSG (("URI: Attempting to open URI:'%s' with %s action specified",
 		    uri, action_to_try ? "an" : "no"));
@@ -2361,8 +2362,10 @@ hildon_uri_open (const gchar      *uri,
 
 	if (action && action->type == HILDON_URI_ACTION_XDG) {
 		ok = uri_xdg_open (uri, scheme, error);
-		if (!ok)
+		if (!ok) {
 			action = NULL;
+			xdg_attempted = TRUE;
+		}
 	}
 
 	if (!ok) {
@@ -2400,10 +2403,11 @@ hildon_uri_open (const gchar      *uri,
 
 				g_clear_error (error);
 
-				if (!action)
-				{
-					ok = uri_xdg_open (uri, scheme, error);
+				if (!action) {
+					if (!xdg_attempted)
+						ok = uri_xdg_open (uri, scheme, error);
 
+					goto cleanup;
 				}
 
 				DEBUG_MSG (("URI: Using first action available for scheme:'%s'", scheme));
