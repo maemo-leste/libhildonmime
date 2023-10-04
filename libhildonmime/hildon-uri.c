@@ -1331,37 +1331,6 @@ uri_launch (DBusConnection  *connection,
 	return success;
 }
 
-static gboolean
-uri_xdg_open(const gchar *uri, const gchar *scheme, GError **error)
-{
-	/* Try XDG mime */
-	GAppInfo *app_info = g_app_info_get_default_for_uri_scheme(scheme);
-	if (app_info) {
-		GList *uri_list = g_list_append(NULL, (gchar*)uri);
-		gboolean ret = g_app_info_launch_uris(app_info, uri_list, NULL, NULL);
-		g_list_free(uri_list);
-		g_object_unref(app_info);
-		if (ret)
-			return TRUE;
-	}
-
-	gchar *error_str;
-	error_str = g_strdup_printf
-		("No actions or XDG applications exist for the scheme '%s'", scheme);
-
-	DEBUG_MSG (("URI: %s", error_str));
-
-	g_set_error (error,
-				HILDON_URI_ERROR,
-				HILDON_URI_NO_ACTIONS,
-				"%s",
-				error_str);
-
-	g_free (error_str);
-
-	return FALSE;
-}
-
 /*
  * External API
  */ 
@@ -2392,8 +2361,9 @@ hildon_uri_open (const gchar      *uri,
 
 			g_clear_error (error);
 
+			/* Fallback to XDG if no DBUS action is available */
 			if (!action)
-				action = hildon_uri_get_xdg_action();
+				action = hildon_uri_get_xdg_action ();
 
 			DEBUG_MSG (("URI: Using first action available for "
 				    "scheme:'%s'", scheme));
@@ -2401,11 +2371,35 @@ hildon_uri_open (const gchar      *uri,
 	}
 
 	if (action->type == HILDON_URI_ACTION_XDG) {
-		ok = uri_xdg_open (uri, scheme, error);
-	} else {
-		GSList *uris = NULL;
+		GAppInfo *info = g_app_info_get_default_for_uri_scheme (scheme);
 
-		uris = g_slist_append (uris, (gchar *)uri);
+		if (info) {
+			GList *uris;
+
+			uris = g_list_append(NULL, (gchar*)uri);
+			ok = g_app_info_launch_uris (info, uris, NULL, error);
+			g_list_free (uris);
+			g_object_unref (info);
+		} else {
+			gchar *err_str;
+
+			err_str = g_strdup_printf ("No %sXDG applications exist for the scheme '%s'",
+						   cleanup_action ? "actions or " : "", scheme);
+
+			DEBUG_MSG (("URI: %s", err_str));
+
+			g_set_error (error,
+				     HILDON_URI_ERROR,
+				     HILDON_URI_NO_ACTIONS,
+				     "%s",
+				     err_str);
+
+			g_free (err_str);
+		}
+	} else {
+		GSList *uris;
+
+		uris = g_slist_append (NULL, (gchar *)uri);
 		ok = uri_launch (connection, action, uris);
 		g_slist_free (uris);
 
