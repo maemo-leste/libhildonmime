@@ -54,6 +54,7 @@ G_BEGIN_DECLS
 /*@{*/
 
 typedef struct _HildonURIAction HildonURIAction;
+typedef gboolean (*HildonURIActionFilter)(HildonURIAction *action, gpointer userdata);
 
 /**
  * HildonURIActionType:
@@ -121,6 +122,10 @@ gboolean            hildon_uri_set_default_action_by_uri     (const gchar       
 							      GError              **error);
 gboolean            hildon_uri_open                          (const gchar          *uri,
 							      HildonURIAction      *action,
+							      GError              **error);
+gboolean            hildon_uri_open_filter                   (const gchar          *uri,
+							      HildonURIActionFilter filter,
+							      gpointer              userdata,
 							      GError              **error);
  /*@}*/
 

@@ -1,23 +1,23 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.52)
  
-AC_INIT(libhildonmime, 2.1.3)
+AC_INIT(libhildonmime, 2.2.0)
 AC_CONFIG_SRCDIR(libhildonmime/hildon-uri.c)
 AM_INIT_AUTOMAKE
 
 dnl Versioning for libhildonmime
 
 dnl Increase when changing the API (adding, removing, changing)
-LIBHILDONMIME_CURRENT=1
+LIBHILDONMIME_CURRENT=2
 
 dnl Increase when changing implementation of current API,
 dnl reset to 0 when changing CURRENT. This is the revision of current
 dnl API version.
-LIBHILDONMIME_REVISION=3
+LIBHILDONMIME_REVISION=0
 
 dnl Change this only if CURRENT has been changed. Increase if API
 dnl change is ABI compatible, otherwise reset to 0
-LIBHILDONMIME_AGE=1
+LIBHILDONMIME_AGE=2
 
 LIBHILDONMIME_VERSION_INFO="$LIBHILDONMIME_CURRENT:$LIBHILDONMIME_REVISION:$LIBHILDONMIME_AGE"
 AC_SUBST(LIBHILDONMIME_VERSION_INFO)

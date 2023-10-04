@@ -2425,3 +2425,60 @@ cleanup:
 
 	return ok;
 }
+
+/**
+ * hildon_uri_open_filter:
+ * @uri: A string which represents a URI.
+ * @filter: A @HildonURIActionFilter function.
+ * @userdata: User data to be passed to @filter function.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * This will call @filter function for every action returned by
+ * @hildon_uri_get_actions_by_uri() for that @uri and for XDG action, until
+ * @filter function returns %TRUE. Then @hildon_uri_open() will be called for
+ * that action.
+ *
+ * If %FALSE is returned and @error is non-%NULL, it will hold the error
+ * that occurred while trying to open @uri.
+ *
+ * Return: %TRUE if successful or %FALSE if error occurred or @hildon_uri_open()
+ * was never called.
+ **/
+gboolean
+hildon_uri_open_filter (const gchar          *uri,
+			HildonURIActionFilter filter,
+			gpointer              userdata,
+			GError              **error)
+{
+	GSList *actions, *l;
+	gboolean rv = FALSE;
+	HildonURIAction  *action = NULL;
+
+	actions = hildon_uri_get_actions_by_uri (uri, -1, NULL);
+
+	for (l = actions; l; l = l->next) {
+		if (filter (l->data, userdata)) {
+			action = hildon_uri_action_ref (l->data);
+			break;
+		}
+	}
+
+	hildon_uri_free_actions (actions);
+
+	if (!action) {
+		action = hildon_uri_get_xdg_action ();
+
+		if (!filter (action, userdata)) {
+			hildon_uri_action_unref (action);
+			action = NULL;
+		}
+	}
+
+	if (action) {
+		rv = hildon_uri_open (uri, action, error);
+		hildon_uri_action_unref (action);
+	}
+
+	return rv;
+}
