@@ -1,3 +1,11 @@
+libhildonmime (4.1.0) unstable; urgency=medium
+
+  * hildon-uri: add action objects for xdg-open
+  * hildon-uri: add hildon_uri_open_filter()
+  * restore documentation package
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Thu, 05 Oct 2023 10:43:27 +0300
+
 libhildonmime (4.0.4) unstable; urgency=medium
 
   * try XDG when opening urls and no action is available
