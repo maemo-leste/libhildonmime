@@ -49,6 +49,7 @@
 #define HILDON_URI_ACTION_SERVICE             "X-Osso-Service"             /* new */
 #define HILDON_URI_ACTION_METHOD              "Method"
 #define HILDON_URI_ACTION_DOMAIN              "TranslationDomain"
+#define HILDON_URI_ACTION_MODIFIER            "Modifier"
 
 /* For $prefix/share/applications/uri-action-defaults.list */
 #define HILDON_URI_DEFAULTS_FILE              "uri-action-defaults.list"
@@ -68,71 +69,75 @@
  * name which is a translated string id. 
  */
 struct _HildonURIAction {
-	guint                 ref_count;
+	guint                    ref_count;
 
-	HildonURIActionType   type;            /* new */
-	gchar                *desktop_file;
+	HildonURIActionType      type;            /* new */
+	gchar                   *desktop_file;
 	
-	gchar                *id;              /* new */
+	gchar                   *id;              /* new */
 
-	gchar                *scheme;
-	gchar                *mime_type;       /* new */
+	gchar                   *scheme;
+	gchar                   *mime_type;       /* new */
 
-	gchar                *name;
-	gchar                *service;
-	gchar                *method;
-	gchar                *domain; 
+	gchar                   *name;
+	gchar                   *service;
+	gchar                   *method;
+	gchar                   *domain;
+	HildonURIActionModifier  modifier;
 };
 
 /* Actions */
-static HildonURIAction *   uri_action_new                              (HildonURIActionType   type,
-									const gchar          *desktop_file,
-									const gchar          *id,
-									const gchar          *scheme,
-									const gchar          *mime_type,
-									const gchar          *name,
-									const gchar          *service,
-									const gchar          *method,
-									const gchar          *domain);
-static void                uri_action_free                             (HildonURIAction      *action);
-static const gchar *       uri_action_type_to_string                   (HildonURIActionType   type);
-static HildonURIActionType uri_action_type_from_string                 (const gchar          *type_str);
+static HildonURIAction *       uri_action_new                              (HildonURIActionType   type,
+									    const gchar          *desktop_file,
+									    const gchar          *id,
+									    const gchar          *scheme,
+									    const gchar          *mime_type,
+									    const gchar          *name,
+									    const gchar          *service,
+									    const gchar          *method,
+									    const gchar          *domain,
+									    const gchar          *modifier);
+static void                    uri_action_free                             (HildonURIAction      *action);
+static const gchar *           uri_action_type_to_string                   (HildonURIActionType   type);
+static HildonURIActionType     uri_action_type_from_string                 (const gchar          *type_str);
+static const gchar *           uri_action_modifier_to_string               (HildonURIActionModifier modifier);
+static HildonURIActionModifier uri_action_modifier_from_string             (const gchar          *modifier_str);
 
 /* Desktop files */
-static gchar *             uri_get_desktop_file_that_exists            (const gchar          *str);
-static GSList *            uri_get_desktop_files_by_scheme_by_filename (const gchar          *filename,
-									const gchar          *scheme);
-static GSList *            uri_get_desktop_files_by_scheme             (const gchar          *scheme);
-static gboolean            uri_get_desktop_file_is_old_ver             (const gchar          *desktop_file);
-static GSList *            uri_get_desktop_file_actions                (const gchar          *desktop_file,
-									const gchar          *scheme);
-static GSList *            uri_get_desktop_file_actions_filtered       (GSList               *actions,
-									HildonURIActionType   filter_action_type,
-									const gchar          *filter_mime_type);
-static GSList *            uri_get_desktop_file_info                   (const gchar          *desktop_file,
-									const gchar          *scheme);
+static gchar *                 uri_get_desktop_file_that_exists            (const gchar          *str);
+static GSList *                uri_get_desktop_files_by_scheme_by_filename (const gchar          *filename,
+									    const gchar          *scheme);
+static GSList *                uri_get_desktop_files_by_scheme             (const gchar          *scheme);
+static gboolean                uri_get_desktop_file_is_old_ver             (const gchar          *desktop_file);
+static GSList *                uri_get_desktop_file_actions                (const gchar          *desktop_file,
+									    const gchar          *scheme);
+static GSList *                uri_get_desktop_file_actions_filtered       (GSList               *actions,
+									    HildonURIActionType   filter_action_type,
+									    const gchar          *filter_mime_type);
+static GSList *                uri_get_desktop_file_info                   (const gchar          *desktop_file,
+									    const gchar          *scheme);
 
 /* Defaults file */
-static gboolean            uri_get_desktop_file_by_filename            (const gchar          *filename,
-									const gchar          *scheme,
-									gchar               **desktop_file,
-									gchar               **action_name);
-static gboolean            uri_get_desktop_file_by_scheme              (const gchar          *scheme,
-									gchar               **filename,
-									gchar               **action_name);
-static HildonURIAction *   uri_get_desktop_file_action                 (const gchar          *scheme,
-									const gchar          *desktop_file_and_action);
-static gboolean            uri_set_defaults_file                       (const gchar          *scheme,
-									const gchar          *mime_type,
-									const gchar          *desktop_file,
-									const gchar          *action_id);
+static gboolean                uri_get_desktop_file_by_filename            (const gchar          *filename,
+									    const gchar          *scheme,
+									    gchar               **desktop_file,
+									    gchar               **action_name);
+static gboolean                uri_get_desktop_file_by_scheme              (const gchar          *scheme,
+									    gchar               **filename,
+									    gchar               **action_name);
+static HildonURIAction *       uri_get_desktop_file_action                 (const gchar          *scheme,
+									    const gchar          *desktop_file_and_action);
+static gboolean                uri_set_defaults_file                       (const gchar          *scheme,
+									    const gchar          *mime_type,
+									    const gchar          *desktop_file,
+									    const gchar          *action_id);
 
 /* URI launching */
-static void                uri_launch_add_arg                          (const gchar          *uri,
-									DBusMessageIter      *iter);
-static gboolean            uri_launch                                  (DBusConnection       *connection,
-									HildonURIAction      *action,
-									GSList               *uris);
+static void                    uri_launch_add_arg                          (const gchar          *uri,
+									    DBusMessageIter      *iter);
+static gboolean                uri_launch                                  (DBusConnection       *connection,
+									    HildonURIAction      *action,
+									    GSList               *uris);
 
 /*
  * Actions
@@ -147,7 +152,8 @@ uri_action_new (HildonURIActionType  type,
 		const gchar         *name,
 		const gchar         *service,
 		const gchar         *method,
-		const gchar         *domain)
+		const gchar         *domain,
+		const gchar         *modifier)
 {
 	HildonURIAction *action;
 
@@ -181,6 +187,8 @@ uri_action_new (HildonURIActionType  type,
 	action->service = g_strdup (service);
 	action->method = g_strdup (method);
 	action->domain = g_strdup (domain);
+
+	action->modifier = uri_action_modifier_from_string (modifier);
 
 	return action;
 }
@@ -234,6 +242,43 @@ uri_action_type_from_string (const gchar *type_str)
 	}
 
 	return HILDON_URI_ACTION_NORMAL;
+}
+
+static const gchar *
+uri_action_modifier_to_string (HildonURIActionModifier modifier)
+{
+	switch (modifier) {
+	case HILDON_URI_MODIFIER_OPEN:   return "Open";
+	case HILDON_URI_MODIFIER_EDIT: return "Edit";
+	case HILDON_URI_MODIFIER_SHARE: return "Share";
+	}
+
+	return "Unknown";
+}
+
+static HildonURIActionModifier
+uri_action_modifier_from_string (const gchar *modifier_str)
+{
+	if (modifier_str) {
+		const gchar *str;
+
+		str = uri_action_modifier_to_string (HILDON_URI_MODIFIER_OPEN);
+		if (g_ascii_strcasecmp (modifier_str, str) == 0) {
+			return HILDON_URI_MODIFIER_OPEN;
+		}
+
+		str = uri_action_modifier_to_string (HILDON_URI_MODIFIER_EDIT);
+		if (g_ascii_strcasecmp (modifier_str, str) == 0) {
+			return HILDON_URI_MODIFIER_EDIT;
+		}
+
+		str = uri_action_modifier_to_string (HILDON_URI_MODIFIER_SHARE);
+		if (g_ascii_strcasecmp (modifier_str, str) == 0) {
+			return HILDON_URI_MODIFIER_SHARE;
+		}
+	}
+
+	return HILDON_URI_MODIFIER_OPEN;
 }
 
 /*
@@ -584,6 +629,7 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 		gchar             *method;
 		gchar             *domain;
 		gchar             *mime_type = NULL;
+		gchar             *modifier = NULL;
 		gboolean           create;
 
 		if (!g_key_file_has_group (key_file, strv[i])) {
@@ -627,7 +673,10 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 		domain = g_key_file_get_string (key_file, strv[i],
 						HILDON_URI_ACTION_DOMAIN, 
 						NULL);
-		
+		modifier = g_key_file_get_string (key_file, strv[i],
+						  HILDON_URI_ACTION_MODIFIER,
+						  NULL);
+
 		/* Inherit from parent settings */
 		if (!service) {
 			service = g_strdup (parent_service);
@@ -663,10 +712,13 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 						 name, 
 						 service, 
 						 method, 
-						 domain);
+						 domain,
+						 modifier);
+
 			actions = g_slist_append (actions, action);
 		}
-		
+
+		g_free (modifier);
 		g_free (mime_type);
 		g_free (service);
 		g_free (method);
@@ -826,7 +878,7 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 					     NULL);
 	if (ok) {
 		gchar    *group;
-		gchar    *service, *name, *method, *domain;
+		gchar    *service, *name, *method, *domain, *modifier;
 		gboolean  create = TRUE;
 
 		/* Service */
@@ -844,7 +896,9 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 						HILDON_URI_ACTION_METHOD, NULL);
 		domain = g_key_file_get_string (key_file, group,
 						HILDON_URI_ACTION_DOMAIN, NULL);
-		
+		modifier = g_key_file_get_string (key_file, group,
+						  HILDON_URI_ACTION_MODIFIER, NULL);
+
 		if (!name) {
 			g_warning ("Desktop file:'%s' contained no 'Name' key for scheme:'%s'",
 				   filename, scheme_lower);
@@ -879,10 +933,13 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 						 name, 
 						 service, 
 						 method, 
-						 domain);
+						 domain,
+						 modifier);
+
 			actions = g_slist_prepend (actions, action);
 		}
-		
+
+		g_free (modifier);
 		g_free (domain);
 		g_free (method);
 		g_free (name);
@@ -1465,6 +1522,22 @@ hildon_uri_action_get_translation_domain (HildonURIAction *action)
 	g_return_val_if_fail (action != NULL, NULL);
 
 	return action->domain;
+}
+
+/**
+ * hildon_uri_action_get_modifier:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the modifier associated with an @action.
+ *
+ * Return: A @HildonURIActionModifier associated with the @action.
+ **/
+HildonURIActionModifier
+hildon_uri_action_get_modifier           (HildonURIAction      *action)
+{
+	g_return_val_if_fail (action != NULL, HILDON_URI_MODIFIER_OPEN);
+
+	return action->modifier;
 }
 
 /**
@@ -2111,7 +2184,7 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 HildonURIAction *
 hildon_uri_get_xdg_action (void)
 {
-	return uri_action_new (HILDON_URI_ACTION_XDG, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	return uri_action_new (HILDON_URI_ACTION_XDG, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 /**
@@ -2429,15 +2502,21 @@ cleanup:
 /**
  * hildon_uri_open_filter:
  * @uri: A string which represents a URI.
- * @filter: A @HildonURIActionFilter function.
- * @userdata: User data to be passed to @filter function.
- * @error: The address of a pointer to a @GError structure. This is
- * optional and can be %NULL.
+ * @filter: A @HildonURIActionFilter function used to filter the actions.
+ * @modifier: A @HildonURIActionModifier modifier. Only actions with this
+ * modifier will be passed to filter function. If set to -1 no modifier type
+ * filtering will be done.
+ * @userdata: User data to be passed to @filter function. This is optional and
+ * can be %NULL.
+ * @error: The address of a pointer to a @GError structure. This is optional and
+ * can be %NULL.
  *
- * This will call @filter function for every action returned by
- * @hildon_uri_get_actions_by_uri() for that @uri and for XDG action, until
- * @filter function returns %TRUE. Then @hildon_uri_open() will be called for
- * that action.
+ * This will call @filter function (if not %NULL) for every action with modifier
+ * @modifier returned by @hildon_uri_get_actions_by_uri() for that @uri and for
+ * XDG action, until @filter function returns %TRUE. If @filter function is
+ * %NULL then either the first action that has modifier @modifier (if any) or
+ * XDG action will be selected. Then @hildon_uri_open() will be called for that
+ * action.
  *
  * If %FALSE is returned and @error is non-%NULL, it will hold the error
  * that occurred while trying to open @uri.
@@ -2447,6 +2526,7 @@ cleanup:
  **/
 gboolean
 hildon_uri_open_filter (const gchar          *uri,
+			HildonURIActionModifier modifier,
 			HildonURIActionFilter filter,
 			gpointer              userdata,
 			GError              **error)
@@ -2458,7 +2538,12 @@ hildon_uri_open_filter (const gchar          *uri,
 	actions = hildon_uri_get_actions_by_uri (uri, -1, NULL);
 
 	for (l = actions; l; l = l->next) {
-		if (filter (l->data, userdata)) {
+		if (modifier != -1 &&
+		    hildon_uri_action_get_modifier (l->data) != modifier) {
+			continue;
+		}
+
+		if (!filter || filter (l->data, userdata)) {
 			action = hildon_uri_action_ref (l->data);
 			break;
 		}
@@ -2469,7 +2554,7 @@ hildon_uri_open_filter (const gchar          *uri,
 	if (!action) {
 		action = hildon_uri_get_xdg_action ();
 
-		if (!filter (action, userdata)) {
+		if (filter && !filter (action, userdata)) {
 			hildon_uri_action_unref (action);
 			action = NULL;
 		}

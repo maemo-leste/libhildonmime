@@ -74,6 +74,18 @@ typedef enum {
 	HILDON_URI_ACTION_XDG
 } HildonURIActionType;
 
+/**
+ * HildonURIActionModifier:
+ * @HILDON_URI_MODIFIER_OPEN: Service will open the url.This is the default
+ * @HILDON_URI_MODIFIER_EDIT: Service will create/edit using the url
+ * @HILDON_URI_MODIFIER_SHARE: Service will use url for sharing
+ **/
+typedef enum {
+	HILDON_URI_MODIFIER_OPEN,
+	HILDON_URI_MODIFIER_EDIT,
+	HILDON_URI_MODIFIER_SHARE
+} HildonURIActionModifier;
+
 typedef enum { 
 	HILDON_URI_INVALID_URI,
 	HILDON_URI_INVALID_ACTION,
@@ -87,46 +99,48 @@ typedef enum {
 
 GQuark              hildon_uri_error_quark                   (void) G_GNUC_CONST;
 
-HildonURIAction *   hildon_uri_action_ref                    (HildonURIAction      *action);
-void                hildon_uri_action_unref                  (HildonURIAction      *action);
-HildonURIActionType hildon_uri_action_get_type               (HildonURIAction      *action);
-const gchar *       hildon_uri_action_get_name               (HildonURIAction      *action);
-const gchar *       hildon_uri_action_get_service            (HildonURIAction      *action);
-const gchar *       hildon_uri_action_get_method             (HildonURIAction      *action);
-const gchar *       hildon_uri_action_get_translation_domain (HildonURIAction      *action);
+HildonURIAction *       hildon_uri_action_ref                    (HildonURIAction      *action);
+void                    hildon_uri_action_unref                  (HildonURIAction      *action);
+HildonURIActionType     hildon_uri_action_get_type               (HildonURIAction      *action);
+const gchar *           hildon_uri_action_get_name               (HildonURIAction      *action);
+const gchar *           hildon_uri_action_get_service            (HildonURIAction      *action);
+const gchar *           hildon_uri_action_get_method             (HildonURIAction      *action);
+const gchar *           hildon_uri_action_get_translation_domain (HildonURIAction      *action);
+HildonURIActionModifier hildon_uri_action_get_modifier           (HildonURIAction      *action);
 
-GSList *            hildon_uri_get_actions                   (const gchar          *scheme,
-							      GError              **error);
-GSList *            hildon_uri_get_actions_by_uri            (const gchar          *uri_str,
-							      HildonURIActionType   type,
-							      GError              **error);
-void                hildon_uri_free_actions                  (GSList               *list);
+GSList *                hildon_uri_get_actions                   (const gchar          *scheme,
+								  GError              **error);
+GSList *                hildon_uri_get_actions_by_uri            (const gchar          *uri_str,
+								  HildonURIActionType   type,
+								  GError              **error);
+void                    hildon_uri_free_actions                  (GSList               *list);
 
-gchar *             hildon_uri_get_scheme_from_uri           (const gchar          *uri,
-							      GError              **error);
-gboolean            hildon_uri_is_default_action             (HildonURIAction      *action,
-							      GError              **error);
-gboolean            hildon_uri_is_default_action_by_uri      (const gchar          *uri,
-							      HildonURIAction      *action,
-							      GError              **error);
-HildonURIAction *   hildon_uri_get_default_action            (const gchar          *scheme,
-							      GError              **error);
-HildonURIAction *   hildon_uri_get_default_action_by_uri     (const gchar          *uri,
-							      GError              **error);
-HildonURIAction *   hildon_uri_get_xdg_action                (void);
-gboolean            hildon_uri_set_default_action            (const gchar          *scheme,
-							      HildonURIAction      *action,
-							      GError              **error);
-gboolean            hildon_uri_set_default_action_by_uri     (const gchar          *uri_str,
-							      HildonURIAction      *action,
-							      GError              **error);
-gboolean            hildon_uri_open                          (const gchar          *uri,
-							      HildonURIAction      *action,
-							      GError              **error);
-gboolean            hildon_uri_open_filter                   (const gchar          *uri,
-							      HildonURIActionFilter filter,
-							      gpointer              userdata,
-							      GError              **error);
+gchar *                 hildon_uri_get_scheme_from_uri           (const gchar          *uri,
+								  GError              **error);
+gboolean                hildon_uri_is_default_action             (HildonURIAction      *action,
+								  GError              **error);
+gboolean                hildon_uri_is_default_action_by_uri      (const gchar          *uri,
+								  HildonURIAction      *action,
+								  GError              **error);
+HildonURIAction *       hildon_uri_get_default_action            (const gchar          *scheme,
+								  GError              **error);
+HildonURIAction *       hildon_uri_get_default_action_by_uri     (const gchar          *uri,
+								  GError              **error);
+HildonURIAction *       hildon_uri_get_xdg_action                (void);
+gboolean                hildon_uri_set_default_action            (const gchar          *scheme,
+								  HildonURIAction      *action,
+								  GError              **error);
+gboolean                hildon_uri_set_default_action_by_uri     (const gchar          *uri_str,
+								  HildonURIAction      *action,
+								  GError              **error);
+gboolean                hildon_uri_open                          (const gchar          *uri,
+								  HildonURIAction      *action,
+								  GError              **error);
+gboolean                hildon_uri_open_filter                   (const gchar          *uri,
+								  HildonURIActionModifier modifier,
+								  HildonURIActionFilter filter,
+								  gpointer              userdata,
+								  GError              **error);
  /*@}*/
 
 G_END_DECLS
