@@ -1,3 +1,9 @@
+libhildonmime (4.2.0) unstable; urgency=medium
+
+  *add HildonURIActionModifier
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Sat, 07 Oct 2023 10:31:54 +0300
+
 libhildonmime (4.1.0) unstable; urgency=medium
 
   * hildon-uri: add action objects for xdg-open
